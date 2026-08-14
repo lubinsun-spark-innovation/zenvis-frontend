@@ -1,11 +1,22 @@
 <template>
-  <el-dialog v-model="visible" title="修改密码" @close="handleCancel" :before-close="handleCancel">
+  <n-modal
+    :show="visible"
+    preset="card"
+    title="修改密码"
+    class="password-modal"
+    :style="modalStyle"
+    content-style="overflow: auto"
+    :mask-closable="false"
+    :z-index="4000"
+    @update:show="handleVisibleChange"
+  >
+    <p class="password-modal__hint">密码修改成功后将退出当前登录，请使用新密码重新登录。</p>
     <el-form
       ref="formRef"
       :model="formPassword"
-      name="login"
+      name="change-password"
       autocomplete="off"
-      label-width="100px"
+      label-position="top"
     >
       <el-form-item label="原密码" prop="old_password" :rules="formRules.old_password">
         <el-input
@@ -13,6 +24,7 @@
           type="password"
           placeholder="请输入原密码"
           v-model="formPassword.old_password"
+          autocomplete="current-password"
           show-password
         />
       </el-form-item>
@@ -20,8 +32,9 @@
         <el-input
           class="login-input"
           type="password"
-          placeholder="请输入密码"
+          placeholder="8～16 位，包含大小写字母、数字和 @!#$"
           v-model="formPassword.password"
+          autocomplete="new-password"
           show-password
         />
       </el-form-item>
@@ -29,23 +42,26 @@
         <el-input
           class="login-input"
           type="password"
-          placeholder="请输入密码"
+          placeholder="请再次输入新密码"
           v-model="formPassword.password_copy"
+          autocomplete="new-password"
           show-password
+          @keyup.enter="handleOk"
         />
       </el-form-item>
     </el-form>
     <template #footer>
-      <span class="dialog-footer">
+      <div class="password-modal__actions">
         <el-button @click="handleCancel">取消</el-button>
-        <el-button type="primary" @click="handleOk">确定</el-button>
-      </span>
+        <el-button type="primary" @click="handleOk">确认修改</el-button>
+      </div>
     </template>
-  </el-dialog>
+  </n-modal>
 </template>
 <script setup lang="ts">
   import { reactive, ref, watch } from "vue";
   import type { FormInstance } from 'element-plus';
+  import { NModal } from 'naive-ui';
   import { rules } from '@u/tool';
   interface IUserFrom {
     old_password: string;
@@ -69,6 +85,10 @@
     password: '',
     password_copy: ''
   });
+  const modalStyle = {
+    width: 'min(520px, calc(100vw - 32px))',
+    maxHeight: 'calc(100vh - 32px)',
+  };
   const newPass = (rule: any, value: string, callback: any) => {
     if (value) {
       if (!rules.passwordRule(value)) {
@@ -115,6 +135,9 @@
     }
     emit('on-cancel');
   };
+  const handleVisibleChange = (value: boolean) => {
+    if (!value) handleCancel();
+  };
   const handleOk = () => {
     formRef.value?.validate((valid: boolean) => {
       if (valid) {
@@ -124,3 +147,38 @@
     });
   };
 </script>
+
+<style scoped lang="scss">
+  .password-modal__hint {
+    padding: 10px 12px;
+    margin-bottom: 18px;
+    color: var(--zv-text-secondary);
+    font-size: 13px;
+    line-height: 1.6;
+    background: var(--zv-bg-subtle);
+    border: 1px solid var(--zv-divider);
+    border-radius: 10px;
+  }
+
+  .password-modal__actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+  }
+
+  :deep(.el-form-item:last-child) {
+    margin-bottom: 0;
+  }
+
+  :deep(.el-form-item__label) {
+    padding-bottom: 6px;
+    font-weight: 600;
+    color: var(--zv-text);
+  }
+
+  @media (max-width: 640px) {
+    .password-modal__actions > :deep(.el-button) {
+      flex: 1;
+    }
+  }
+</style>

@@ -161,9 +161,8 @@ const submit = async (params: Record<string, string>) => {
   const res = await UserService.getEncrypyKey();
   encryptor.setPublicKey(res.key);
   await UserService.editPassword({
-    oldPassword: encryptor.encrypt(params.old_password) || '',
-    newPassword: encryptor.encrypt(params.password) || '',
-    confirmPassword: encryptor.encrypt(params.password) || '',
+    old_password: encryptor.encrypt(params.old_password) || '',
+    password: encryptor.encrypt(params.password) || '',
   });
   message.success('密码已更新，请重新登录');
   showPassword.value = false;

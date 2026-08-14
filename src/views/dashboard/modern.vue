@@ -1,8 +1,16 @@
 <template>
   <section class="dashboard-modern">
-    <div class="dashboard-toolbar">
-      <n-button class="dashboard-picker" type="primary" round @click="drawerVisible = true">
-        <template #icon><n-icon><Menu /></n-icon></template>
+    <div v-if="dashboardMenuAuthorized" class="dashboard-toolbar">
+      <n-button
+        v-if="canSwitchDashboard"
+        class="dashboard-picker"
+        type="primary"
+        round
+        @click="openDashboardPicker"
+      >
+        <template #icon
+          ><n-icon><Menu /></n-icon
+        ></template>
         切换看板
       </n-button>
 
@@ -11,17 +19,21 @@
           <n-icon><component :is="dashboardIcon(currentDashboard.type)" /></n-icon>
         </span>
         <span>
-          <small>{{ currentDashboard.typeDescription || dashboardTypeLabel(currentDashboard.type) }}</small>
+          <small>{{
+            currentDashboard.typeDescription || dashboardTypeLabel(currentDashboard.type)
+          }}</small>
           <strong>{{ currentDashboard.name }}</strong>
         </span>
       </div>
     </div>
 
-    <n-drawer v-model:show="drawerVisible" placement="left" :width="336">
+    <n-drawer v-if="canSwitchDashboard" v-model:show="drawerVisible" placement="left" :width="336">
       <n-drawer-content closable :native-scrollbar="false">
         <template #header>
           <div class="drawer-title">
-            <span class="drawer-title__mark"><n-icon><DataBoard /></n-icon></span>
+            <span class="drawer-title__mark"
+              ><n-icon><DataBoard /></n-icon
+            ></span>
             <span><strong>看板中心</strong><small>选择你关注的运营视图</small></span>
           </div>
         </template>
@@ -55,7 +67,9 @@
           <div class="drawer-footer">
             <span><i></i> 看板配置已与平台同步</span>
             <n-button quaternary circle :loading="loading" @click="getDashboardList">
-              <template #icon><n-icon><Refresh /></n-icon></template>
+              <template #icon
+                ><n-icon><Refresh /></n-icon
+              ></template>
             </n-button>
           </div>
         </template>
@@ -65,7 +79,10 @@
     <transition name="board-switch" mode="out-in">
       <div :key="currentDashboard?.id || 'empty'" class="dashboard-canvas">
         <LinkBoard v-if="currentDashboard?.type === 'LINK'" :data="currentDashboard" />
-        <LowCodeBoard v-else-if="currentDashboard?.type === 'LOW_CODE_PAGE'" :data="currentDashboard" />
+        <LowCodeBoard
+          v-else-if="currentDashboard?.type === 'LOW_CODE_PAGE'"
+          :data="currentDashboard"
+        />
         <HtmlBoard v-else-if="currentDashboard?.type === 'HTML_PAGE'" :data="currentDashboard" />
         <component
           :is="currentBuiltInDashboard"
@@ -81,8 +98,8 @@
           <n-skeleton height="100%" width="100%" />
         </div>
         <n-empty v-else class="dashboard-empty" description="暂无可展示的看板">
-          <template #extra>
-            <n-button type="primary" @click="drawerVisible = true">选择看板</n-button>
+          <template v-if="canSwitchDashboard" #extra>
+            <n-button type="primary" @click="openDashboardPicker">选择看板</n-button>
           </template>
         </n-empty>
       </div>
@@ -94,7 +111,15 @@
 import { computed, onMounted, ref, watch, type Component } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { NButton, NDrawer, NDrawerContent, NEmpty, NIcon, NSkeleton } from 'naive-ui';
-import { ArrowRight, DataBoard, Document, Link, Menu, Monitor, Refresh } from '@element-plus/icons-vue';
+import {
+  ArrowRight,
+  DataBoard,
+  Document,
+  Link,
+  Menu,
+  Monitor,
+  Refresh,
+} from '@element-plus/icons-vue';
 
 import HtmlBoard from './components/html-board/index.vue';
 import LinkBoard from './components/link-board/index.vue';
@@ -102,19 +127,48 @@ import LowCodeBoard from './components/low-code-board/index.vue';
 import SystemBoard from './components/system-board/index.vue';
 import { SystemService } from '@/service/api';
 import type { Dashboard } from '@/types/type-system';
+import { getPermissionList } from '@u/auth-session';
 
 defineOptions({ name: 'ModernDashboard' });
 
+type DashboardPermissionItem = {
+  route?: string;
+  params?: string;
+  children?: DashboardPermissionItem[];
+};
+
+const hasDashboardMenuPermission = (permissions: DashboardPermissionItem[]): boolean =>
+  permissions.some(
+    permission =>
+      permission.route === 'dashboard' || hasDashboardMenuPermission(permission.children || []),
+  );
+
+const permissionList = getPermissionList<DashboardPermissionItem[]>() || [];
+const dashboardMenuAuthorized = hasDashboardMenuPermission(permissionList);
+const authorizedDashboardSources = new Set<string>();
+
+const collectAuthorizedDashboardSources = (permissions: DashboardPermissionItem[]) => {
+  permissions.forEach(permission => {
+    const params = permission.params || '';
+    if (params.endsWith('.app')) {
+      authorizedDashboardSources.add(params.slice(0, -4));
+    }
+    collectAuthorizedDashboardSources(permission.children || []);
+  });
+};
+
+collectAuthorizedDashboardSources(permissionList);
+
 const builtInDashboardMap: Record<string, Component> = {
   'system-board': SystemBoard,
-  'msg-board': SystemBoard
+  'msg-board': SystemBoard,
 };
 
 const dashboardIcons: Record<string, Component> = {
   BUILT: Monitor,
   LINK: Link,
   LOW_CODE_PAGE: DataBoard,
-  HTML_PAGE: Document
+  HTML_PAGE: Document,
 };
 
 const route = useRoute();
@@ -123,15 +177,27 @@ const drawerVisible = ref(false);
 const loading = ref(false);
 const dashboardListData = ref<Dashboard[]>([]);
 const currentDashboard = ref<Dashboard | null>(null);
+const canSwitchDashboard = computed(
+  () => dashboardMenuAuthorized && dashboardListData.value.length > 1,
+);
 const currentBuiltInDashboard = computed(
-  () => builtInDashboardMap[currentDashboard.value?.code || ''] || null
+  () => builtInDashboardMap[currentDashboard.value?.code || ''] || null,
 );
 
 const dashboardIcon = (type: string) => dashboardIcons[type] || DataBoard;
 const dashboardTypeLabel = (type: string) =>
-  ({ BUILT: '平台内置看板', LINK: '外部链接看板', LOW_CODE_PAGE: '低代码看板', HTML_PAGE: '可视化大屏' })[
-    type
-  ] || '运营看板';
+  ({
+    BUILT: '平台内置看板',
+    LINK: '外部链接看板',
+    LOW_CODE_PAGE: '低代码看板',
+    HTML_PAGE: '可视化大屏',
+  }[type] || '运营看板');
+
+const openDashboardPicker = () => {
+  if (canSwitchDashboard.value) {
+    drawerVisible.value = true;
+  }
+};
 
 const selectDashboardFromRoute = () => {
   if (!dashboardListData.value.length) {
@@ -145,10 +211,21 @@ const selectDashboardFromRoute = () => {
     item =>
       (targetId && String(item.id) === targetId) ||
       (targetCode && item.code === targetCode) ||
-      (targetName && item.name === targetName)
+      (targetName && item.name === targetName),
   );
+  const authorizedPluginDashboard = dashboardMenuAuthorized
+    ? undefined
+    : dashboardListData.value.find(
+        item =>
+          item.type === 'HTML_PAGE' &&
+          Boolean(item.source) &&
+          authorizedDashboardSources.has(item.source || ''),
+      );
   currentDashboard.value =
-    matched || dashboardListData.value.find(item => item.isDefault) || dashboardListData.value[0];
+    authorizedPluginDashboard ||
+    matched ||
+    dashboardListData.value.find(item => item.isDefault) ||
+    dashboardListData.value[0];
 };
 
 const getDashboardList = async () => {
@@ -169,8 +246,8 @@ const setDashboard = async (item: Dashboard) => {
       ...route.query,
       id: String(item.id),
       code: undefined,
-      name: undefined
-    }
+      name: undefined,
+    },
   });
 };
 
@@ -178,10 +255,7 @@ const isCurrentDashboard = (item: Dashboard) =>
   String(currentDashboard.value?.id ?? '') === String(item.id);
 
 onMounted(getDashboardList);
-watch(
-  () => [route.query.id, route.query.code, route.query.name],
-  selectDashboardFromRoute
-);
+watch(() => [route.query.id, route.query.code, route.query.name], selectDashboardFromRoute);
 </script>
 
 <style scoped lang="scss">
@@ -308,7 +382,8 @@ watch(
   background: transparent;
   cursor: pointer;
   text-align: left;
-  transition: color 180ms ease, border-color 180ms ease, background 180ms ease, transform 180ms var(--zv-ease-out);
+  transition: color 180ms ease, border-color 180ms ease, background 180ms ease,
+    transform 180ms var(--zv-ease-out);
 
   &:hover {
     color: var(--zv-text-primary);
@@ -385,7 +460,7 @@ watch(
 
 .dashboard-option:hover .dashboard-option__arrow,
 .dashboard-option.is-active .dashboard-option__arrow {
-  opacity: .72;
+  opacity: 0.72;
   transform: translateX(2px);
 }
 

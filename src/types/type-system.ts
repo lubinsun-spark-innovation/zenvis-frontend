@@ -23,5 +23,6 @@ export type Dashboard = {
   configIndex: string;
   htmlPath: string;
   isDefault: boolean;
+  source?: string;
   updateTime: string;
 }

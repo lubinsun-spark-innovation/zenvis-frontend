@@ -28,6 +28,7 @@ type RawDashboard = {
   config_index?: string;
   html_path?: string;
   is_default?: boolean | number;
+  source?: string;
   update_time?: string;
 };
 
@@ -58,6 +59,7 @@ const normalizeDashboard = (item: RawDashboard): Dashboard => ({
   configIndex: item.config_index || '',
   htmlPath: item.html_path || '',
   isDefault: Boolean(item.is_default),
+  source: item.source || '',
   updateTime: item.update_time || '',
 });
 
