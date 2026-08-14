@@ -1,0 +1,35 @@
+name: Remove ZenVis frontend from Cloudflare
+
+on:
+  push:
+    branches:
+      - feature/frontend-ui-revision-20260810
+    paths:
+      - '.github/workflows/deploy-cloudflare.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  remove-cloudflare-deployment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+      TARGET_NAME: zenvis-soc-frontend
+    steps:
+      - name: Delete Worker
+        run: npx --yes wrangler@4.113.0 delete "$TARGET_NAME" --force
+
+      - name: Delete same-name Pages project if present
+        shell: bash
+        run: |
+          set -euo pipefail
+          projects_json=$(npx --yes wrangler@4.113.0 pages project list --json)
+          if jq -e --arg name "$TARGET_NAME" '.[] | select(.name == $name)' <<<"$projects_json" >/dev/null; then
+            npx --yes wrangler@4.113.0 pages project delete "$TARGET_NAME" --yes
+          else
+            echo "No same-name Pages project exists."
+          fi
