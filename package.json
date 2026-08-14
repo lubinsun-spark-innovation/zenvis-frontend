@@ -56,8 +56,7 @@
     "vite": "^8.1.0",
     "vite-plugin-compression": "^0.5.1",
     "vite-plugin-svg-icons": "^2.0.1",
-    "vue-tsc": "^3.3.5",
-    "wrangler": "4.113.0"
+    "vue-tsc": "^3.3.5"
   },
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
