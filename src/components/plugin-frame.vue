@@ -154,7 +154,10 @@ const syncIframeUi = () => {
         root.dataset.zenvisUi = ZENVIS_UI_CONTRACT_VERSION;
         root.dataset.zenvisProfile = 'standard';
         root.dataset.zenvisTheme = payload.themeId;
+        root.dataset.zenvisThemeVersion = payload.themeVersion;
         root.dataset.zenvisScheme = payload.colorScheme;
+        root.dataset.zenvisDensity = payload.density;
+        root.dataset.zenvisMotion = payload.motionPreset;
         root.style.colorScheme = payload.colorScheme;
         Object.entries(payload.tokens).forEach(([name, value]) => {
           root.style.setProperty(name, value);

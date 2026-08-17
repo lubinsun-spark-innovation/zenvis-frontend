@@ -5,6 +5,8 @@ html[data-zenvis-ui='1.0.0'] body {
   color: var(--zv-text-primary);
   background: var(--zv-bg-canvas);
   font-family: var(--zv-font-family);
+  font-size: 14px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -293,6 +295,166 @@ html[data-zenvis-ui='1.0.0'] body {
   overflow-wrap: anywhere;
   white-space: normal;
   word-break: break-word;
+}
+
+/* Calm Operations keeps operational density while making hierarchy and status
+ * easier to scan. It is intentionally scoped so older built-in themes remain
+ * available as exact visual fallbacks. */
+html[data-zenvis-theme='zenvis-calm-operations'] .zv-workspace,
+html[data-zenvis-theme='zenvis-calm-operations'] .zv-visual-page,
+html[data-zenvis-theme='zenvis-calm-operations'] .zv-crud-workspace {
+  gap: 18px;
+}
+
+html[data-zenvis-theme='zenvis-calm-operations'] .zv-hero {
+  padding: 18px 20px;
+  background: var(--zv-bg-surface);
+}
+
+html[data-zenvis-theme='zenvis-calm-operations'] .zv-hero strong {
+  display: block;
+  margin-top: 10px;
+  color: var(--zv-text-primary);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+html[data-zenvis-theme='zenvis-calm-operations'] .zv-hero small {
+  display: block;
+  margin-top: 2px;
+  color: var(--zv-text-secondary);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+html[data-zenvis-theme='zenvis-calm-operations'] .zv-hero__status {
+  min-height: 26px;
+  color: var(--zv-success);
+  font-weight: 600;
+}
+
+html[data-zenvis-theme='zenvis-calm-operations'] .zv-hero__chips {
+  margin-top: 12px;
+}
+
+html[data-zenvis-theme='zenvis-calm-operations'] .zv-hero__chips > * {
+  color: var(--zv-primary);
+  border-color: rgb(var(--zv-primary-rgb) / 18%);
+  background: rgb(var(--zv-primary-rgb) / 5%);
+  font-weight: 500;
+}
+
+html[data-zenvis-theme='zenvis-calm-operations'] .zv-metric-card,
+html[data-zenvis-theme='zenvis-calm-operations'] .zv-stat-card {
+  min-height: 112px;
+  padding: 16px 18px;
+  background: var(--zv-bg-surface);
+  box-shadow: var(--zv-shadow-sm);
+}
+
+html[data-zenvis-theme='zenvis-calm-operations'] .zv-metric-card::before {
+  left: 18px;
+  width: 34px;
+  height: 2px;
+}
+
+html[data-zenvis-theme='zenvis-calm-operations'] .zv-metric-card > a {
+  align-content: start;
+  gap: 3px;
+  grid-template-rows: auto auto 1fr auto auto;
+}
+
+html[data-zenvis-theme='zenvis-calm-operations']
+  .zv-metric-card
+  > a
+  > .zv-summary-copy:first-child {
+  color: var(--zv-primary);
+  font-size: 16px;
+  line-height: 20px;
+}
+
+html[data-zenvis-theme='zenvis-calm-operations']
+  .zv-metric-card
+  > a
+  > .zv-summary-copy:nth-child(2) {
+  color: var(--zv-text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+html[data-zenvis-theme='zenvis-calm-operations'] .zv-metric-card strong,
+html[data-zenvis-theme='zenvis-calm-operations'] .zv-stat-card__value {
+  margin-top: 4px;
+  color: var(--zv-text-primary);
+  font-size: clamp(28px, 2.2vw, 32px);
+  font-weight: 700;
+  line-height: 1.12;
+}
+
+html[data-zenvis-theme='zenvis-calm-operations'] .zv-metric-card small,
+html[data-zenvis-theme='zenvis-calm-operations'] .zv-stat-card__label {
+  color: var(--zv-text-secondary);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 18px;
+}
+
+html[data-zenvis-theme='zenvis-calm-operations']
+  .zv-metric-card
+  > a
+  > .zv-summary-copy:last-child,
+html[data-zenvis-theme='zenvis-calm-operations'] .zv-stat-card__action {
+  margin-top: 6px;
+  color: var(--zv-primary);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+html[data-zenvis-theme='zenvis-calm-operations'] .zv-metric-card .zv-summary-metric {
+  display: block;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  color: var(--zv-text-primary);
+  border: 0;
+  background: transparent;
+  font-size: clamp(26px, 2vw, 30px);
+  font-weight: 700;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+}
+
+html[data-zenvis-theme='zenvis-calm-operations'] .zv-chart-card {
+  box-shadow: var(--zv-shadow-sm);
+}
+
+html[data-zenvis-theme='zenvis-calm-operations'] .zv-chart-card:hover {
+  border-color: var(--zv-border);
+  box-shadow: var(--zv-shadow-sm);
+  transform: none;
+}
+
+html[data-zenvis-theme='zenvis-calm-operations'] .zv-chart-frame {
+  min-height: 280px;
+}
+
+html[data-zenvis-density='compact'] .zv-workspace,
+html[data-zenvis-density='compact'] .zv-visual-page,
+html[data-zenvis-density='compact'] .zv-crud-workspace {
+  gap: 14px;
+}
+
+html[data-zenvis-motion='none'] .zv-page *,
+html[data-zenvis-motion='none'] .zv-page *::before,
+html[data-zenvis-motion='none'] .zv-page *::after {
+  scroll-behavior: auto !important;
+  animation: none !important;
+  transition-duration: 0.01ms !important;
 }
 
 @media (max-width: 768px) {

@@ -17,8 +17,9 @@ ZenVis 主题由平台前端统一解析和应用，插件只消费语义 token�
 
 - `zenvis-naive-light`：当前 ZenVis 亮色 Naive UI 视觉，作为稳定兼容基线。
 - `zenvis-command-dark`：黑灰、绿色安全态势风格，使用高对比正文和状态色。
+- `zenvis-calm-operations`：冷静运营控制台亮色主题，使用深海军蓝导航、清晰字阶、克制阴影和短促动效，适合 OneSOC 与 Lubinsun 高频运营页面。
 
-内置主题可以预览、启用、克隆和导出，不能编辑或删除。自定义主题目前只能继承上述两个内置主题，避免出现不可解析的多级远程依赖。
+内置主题可以预览、启用、克隆和导出，不能编辑或删除。自定义主题目前只能继承上述内置主题，避免出现不可解析的多级远程依赖。需要回退方案 3 时，在 UI 管理中重新启用 `zenvis-naive-light` 即可。
 
 ## Manifest
 
@@ -56,6 +57,8 @@ ZenVis 主题由平台前端统一解析和应用，插件只消费语义 token�
 - 通用 `zv-*` 语义类，如指标卡、命令条、事件栈和详情栏。
 
 STANDARD 插件会收到初始 `zenvis:ui` 和后续 `zenvis:theme-update`，无需重新载入 iframe。IMMERSIVE 与 EXTERNAL 页面继续拥有自己的画布视觉，宿主不会注入 STANDARD 样式。
+
+payload 会同步 `themeVersion`、`density` 与 `motionPreset`。Calm Operations 使用 `comfortable` 密度与 `subtle` 动效；系统或用户启用 reduced motion 时，iframe 图表与 CSS 动画会一起停用。
 
 业务插件不得新增 `soc-*`、`lubinsun-*` 一类平台视觉前缀；若确实需要新模式，应补充通用 `zv-*` 语义类。
 

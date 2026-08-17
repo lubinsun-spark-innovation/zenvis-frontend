@@ -27,7 +27,10 @@
     root.dataset.zenvisUi = CONTRACT_VERSION;
     root.dataset.zenvisProfile = 'standard';
     root.dataset.zenvisTheme = context.themeId || 'zenvis-naive-light';
+    root.dataset.zenvisThemeVersion = context.themeVersion || '1.0.0';
     root.dataset.zenvisScheme = context.colorScheme || 'light';
+    root.dataset.zenvisDensity = context.density || 'compact';
+    root.dataset.zenvisMotion = context.motionPreset || 'standard';
     root.style.colorScheme = context.colorScheme || 'light';
     Object.keys((context && context.tokens) || {}).forEach(function (name) {
       if (name.indexOf('--zv-') === 0) root.style.setProperty(name, context.tokens[name]);

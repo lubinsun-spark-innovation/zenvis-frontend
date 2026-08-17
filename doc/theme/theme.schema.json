@@ -26,7 +26,7 @@
       "enum": ["light", "dark"]
     },
     "extends": {
-      "enum": ["zenvis-naive-light", "zenvis-command-dark"]
+      "enum": ["zenvis-naive-light", "zenvis-command-dark", "zenvis-calm-operations"]
     },
     "tokens": {
       "type": "object",

@@ -19,6 +19,11 @@
     return Boolean(context && context.colorScheme === 'dark');
   }
 
+  function isMotionDisabled() {
+    var context = global.ZenVisPluginUI && global.ZenVisPluginUI.getContext();
+    return Boolean(context && (context.reducedMotion || context.motionPreset === 'none'));
+  }
+
   function axisTheme(includeSplitLine) {
     var option = {
       axisLine: { lineStyle: { color: palette.line } },
@@ -41,7 +46,18 @@
       backgroundColor: palette.surface,
       darkMode: isDarkScheme(),
       textStyle: { color: palette.text },
+      animation: !isMotionDisabled(),
+      animationDuration: isMotionDisabled() ? 0 : 420,
+      animationDurationUpdate: isMotionDisabled() ? 0 : 260,
+      animationEasing: 'cubicOut',
+      animationEasingUpdate: 'cubicOut',
     };
+
+    if (current.grid) {
+      patch.grid = current.grid.map(function () {
+        return { containLabel: true };
+      });
+    }
 
     if (current.legend) {
       patch.legend = current.legend.map(function () {
@@ -54,7 +70,7 @@
     if (current.title) {
       patch.title = current.title.map(function () {
         return {
-          textStyle: { color: palette.heading, fontWeight: 650 },
+          textStyle: { color: palette.heading, fontWeight: 600 },
           subtextStyle: { color: palette.text },
         };
       });

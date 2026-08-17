@@ -217,7 +217,7 @@ const closeModel = () => {
 
   :deep(.n-menu-item-content-header) {
     font-size: 14px;
-    font-weight: 650;
+    font-weight: 600;
     letter-spacing: 0.01em;
   }
 }
@@ -268,7 +268,7 @@ const closeModel = () => {
   small {
     margin-top: 3px;
     color: var(--zv-text-muted);
-    font-size: 11px;
+    font-size: 12px;
   }
 }
 
@@ -297,6 +297,23 @@ const closeModel = () => {
   background: linear-gradient(135deg, #ef476f, #ff8a5c);
   border-radius: 999px;
   box-shadow: 0 4px 10px rgba(239, 71, 111, 0.24);
+}
+
+:global(html[data-zv-theme='zenvis-calm-operations']) {
+  .primary-navigation :deep(.n-menu-item-content),
+  .primary-navigation :deep(.n-submenu .n-menu-item-content) {
+    border-radius: 8px;
+  }
+
+  .primary-navigation :deep(.n-menu-item-content--selected),
+  .primary-navigation :deep(.n-menu-item-content--child-active) {
+    box-shadow: inset 0 -2px 0 var(--zv-primary);
+  }
+
+  .user-avatar {
+    background: var(--zv-primary);
+    box-shadow: 0 5px 14px rgb(var(--zv-primary-rgb) / 20%);
+  }
 }
 
 :global(.user-dropdown-profile) {

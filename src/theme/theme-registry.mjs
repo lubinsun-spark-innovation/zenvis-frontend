@@ -3,6 +3,7 @@ import { chartPalette, designTokens } from './design-tokens.mjs';
 export const UI_THEME_SCHEMA_VERSION = '1.0';
 export const DEFAULT_UI_THEME_ID = 'zenvis-naive-light';
 export const COMMAND_UI_THEME_ID = 'zenvis-command-dark';
+export const CALM_OPERATIONS_UI_THEME_ID = 'zenvis-calm-operations';
 
 const freezeManifest = manifest =>
   Object.freeze({
@@ -95,7 +96,92 @@ export const zenvisCommandDark = freezeManifest({
   motion_preset: 'command',
 });
 
-export const builtinUiThemes = Object.freeze([zenvisNaiveLight, zenvisCommandDark]);
+export const zenvisCalmOperations = freezeManifest({
+  schema_version: UI_THEME_SCHEMA_VERSION,
+  id: CALM_OPERATIONS_UI_THEME_ID,
+  name: 'ZenVis Calm Operations',
+  version: '1.0.0',
+  color_scheme: 'light',
+  extends: DEFAULT_UI_THEME_ID,
+  tokens: {
+    '--zv-primary': '#2f5ee5',
+    '--zv-primary-rgb': '47 94 229',
+    '--zv-primary-hover': '#3b6df0',
+    '--zv-primary-pressed': '#2448bd',
+    '--zv-primary-soft': 'rgba(47, 94, 229, 0.09)',
+    '--zv-cyan': '#0f9fa3',
+    '--zv-cyan-rgb': '15 159 163',
+    '--zv-cyan-pressed': '#0b7d80',
+    '--zv-success': '#0f9f74',
+    '--zv-success-rgb': '15 159 116',
+    '--zv-success-pressed': '#0b7f5d',
+    '--zv-warning': '#c27a08',
+    '--zv-warning-rgb': '194 122 8',
+    '--zv-danger': '#d1435b',
+    '--zv-danger-rgb': '209 67 91',
+    '--zv-danger-pressed': '#b6324a',
+    '--zv-info': '#2563c7',
+    '--zv-info-rgb': '37 99 199',
+    '--zv-shadow-rgb': '23 43 77',
+    '--zv-overlay-rgb': '9 21 39',
+    '--zv-bg': '#f2f5fa',
+    '--zv-bg-canvas': '#f2f5fa',
+    '--zv-bg-canvas-rgb': '242 245 250',
+    '--zv-bg-elevated': '#ffffff',
+    '--zv-bg-surface': '#ffffff',
+    '--zv-bg-surface-rgb': '255 255 255',
+    '--zv-bg-subtle': '#f7f9fc',
+    '--zv-bg-muted': '#f7f9fc',
+    '--zv-text': '#15233a',
+    '--zv-text-primary': '#15233a',
+    '--zv-text-secondary': '#47556b',
+    '--zv-text-muted': '#66758a',
+    '--zv-text-tertiary': '#66758a',
+    '--zv-sidebar': '#0d1b31',
+    '--zv-sidebar-raised': '#142744',
+    '--zv-sidebar-text': '#d5dfed',
+    '--zv-border': '#dce4ef',
+    '--zv-border-rgb': '220 228 239',
+    '--zv-border-strong': '#c8d3e2',
+    '--zv-divider': '#e8edf4',
+    '--zv-header': 'rgba(255, 255, 255, 0.94)',
+    '--zv-sidebar-hover': 'rgba(255, 255, 255, 0.07)',
+    '--zv-radius-sm': '8px',
+    '--zv-radius': '10px',
+    '--zv-radius-lg': '12px',
+    '--zv-shadow-sm':
+      '0 1px 2px rgba(23, 43, 77, 0.035), 0 6px 18px rgba(23, 43, 77, 0.045)',
+    '--zv-shadow-md': '0 14px 36px rgba(23, 43, 77, 0.09)',
+    '--zv-shadow-lg': '0 24px 64px rgba(9, 21, 39, 0.16)',
+    '--zv-motion': 'cubic-bezier(0.22, 1, 0.36, 1)',
+    '--zv-font-family':
+      "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei UI', 'Microsoft YaHei', system-ui, sans-serif",
+    '--zv-aside-width': 'clamp(204px, 14vw, 232px)',
+    '--zv-header-height': '68px',
+  },
+  chart_palette: {
+    primary: '#2f5ee5',
+    cyan: '#0f9fa3',
+    success: '#0f9f74',
+    warning: '#c27a08',
+    danger: '#d1435b',
+    heading: '#15233a',
+    text: '#47556b',
+    muted: '#66758a',
+    line: '#c8d3e2',
+    split: '#e8edf4',
+    surface: 'transparent',
+    pieBorder: '#ffffff',
+  },
+  density: 'comfortable',
+  motion_preset: 'subtle',
+});
+
+export const builtinUiThemes = Object.freeze([
+  zenvisNaiveLight,
+  zenvisCommandDark,
+  zenvisCalmOperations,
+]);
 
 export const getBuiltinUiTheme = id => builtinUiThemes.find(theme => theme.id === id);
 

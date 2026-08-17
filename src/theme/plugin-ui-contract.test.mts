@@ -102,6 +102,9 @@ test('PluginFrame injects standard tokens only and closes ready/error/timeout li
   assert.match(frame, /zenvis:plugin-error/);
   assert.match(frame, /LOAD_TIMEOUT_MS = 12_000/);
   assert.match(frame, /payload\.tokens/);
+  assert.match(frame, /zenvisThemeVersion = payload\.themeVersion/);
+  assert.match(frame, /zenvisDensity = payload\.density/);
+  assert.match(frame, /zenvisMotion = payload\.motionPreset/);
   assert.match(frame, /const lifecycleFailed = ref\(false\)/);
   assert.match(frame, /const readyReceived = ref\(false\)/);
   assert.match(frame, /const markError[\s\S]*?lifecycleFailed\.value = true/);
@@ -157,6 +160,9 @@ test('runtime and browser fixture implement the versioned host handshake', () =>
   assert.match(runtime, /trustedHostOrigin = event\.origin/);
   assert.match(runtime, /zenvis:plugin-ready/);
   assert.match(runtime, /context\.colorScheme \|\| 'light'/);
+  assert.match(runtime, /context\.themeVersion \|\| '1\.0\.0'/);
+  assert.match(runtime, /context\.density \|\| 'compact'/);
+  assert.match(runtime, /context\.motionPreset \|\| 'standard'/);
   assert.match(runtime, /zenvis:theme-update/);
   assert.match(runtime, /chartPalette/);
   assert.match(runtime, /zenvis:plugin-error/);

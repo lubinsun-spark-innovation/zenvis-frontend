@@ -10,6 +10,9 @@ body,
 
 body {
   color: var(--zv-text);
+  font-family: var(--zv-font-family);
+  font-size: 14px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -31,7 +34,7 @@ body::before {
 }
 
 :focus-visible {
-  outline: 3px solid rgba(79, 110, 247, 0.24);
+  outline: 3px solid rgb(var(--zv-primary-rgb) / 24%);
   outline-offset: 2px;
 }
 
@@ -82,7 +85,6 @@ body::before {
 
 .zv-page-enter-from {
   opacity: 0;
-  filter: blur(3px);
   transform: translateY(8px);
 }
 
@@ -113,7 +115,7 @@ body::before {
   --el-button-border-color: var(--zv-primary);
   --el-button-hover-bg-color: var(--zv-primary-hover);
   --el-button-hover-border-color: var(--zv-primary-hover);
-  box-shadow: 0 8px 20px rgba(79, 110, 247, 0.18);
+  box-shadow: 0 8px 20px rgb(var(--zv-primary-rgb) / 18%);
 }
 
 .el-input__wrapper,
@@ -133,7 +135,7 @@ body::before {
 .el-input__wrapper:hover,
 .el-select__wrapper:hover,
 .el-textarea__inner:hover {
-  box-shadow: 0 0 0 1px rgba(79, 110, 247, 0.55) inset !important;
+  box-shadow: 0 0 0 1px rgb(var(--zv-primary-rgb) / 55%) inset !important;
 }
 
 .el-input__wrapper.is-focus,
@@ -141,7 +143,7 @@ body::before {
 .el-textarea__inner:focus {
   box-shadow:
     0 0 0 1px var(--zv-primary) inset,
-    0 0 0 3px rgba(79, 110, 247, 0.12) !important;
+    0 0 0 3px rgb(var(--zv-primary-rgb) / 12%) !important;
 }
 
 .el-card,
@@ -188,7 +190,7 @@ body::before {
 
 .el-table th.el-table__cell {
   height: 46px;
-  font-weight: 650;
+  font-weight: 600;
   letter-spacing: 0.01em;
 }
 
@@ -244,6 +246,44 @@ body::before {
   border-radius: 12px;
   box-shadow: var(--zv-shadow-md);
   backdrop-filter: blur(16px);
+}
+
+html[data-zv-theme='zenvis-calm-operations'] body::before {
+  background: none;
+}
+
+html[data-zv-theme='zenvis-calm-operations'] .el-card,
+html[data-zv-theme='zenvis-calm-operations'] .el-table {
+  border-radius: var(--zv-radius-lg);
+  box-shadow: var(--zv-shadow-sm);
+}
+
+html[data-zv-theme='zenvis-calm-operations'] .el-button {
+  min-height: 36px;
+  border-radius: var(--zv-radius-sm);
+  font-size: 13px;
+}
+
+html[data-zv-theme='zenvis-calm-operations'] .el-button--primary {
+  box-shadow: 0 5px 14px rgb(var(--zv-primary-rgb) / 18%);
+}
+
+html[data-zv-theme='zenvis-calm-operations'] .el-tabs__active-bar {
+  height: 2px;
+  background: var(--zv-primary);
+}
+
+html[data-zv-motion='subtle'] .zv-page-enter-active,
+html[data-zv-motion='subtle'] .zv-page-leave-active {
+  transition-duration: 220ms;
+}
+
+html[data-zv-motion='none'] *,
+html[data-zv-motion='none'] *::before,
+html[data-zv-motion='none'] *::after {
+  scroll-behavior: auto !important;
+  animation: none !important;
+  transition-duration: 0.01ms !important;
 }
 
 @media (max-width: 1100px) {

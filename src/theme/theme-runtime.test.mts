@@ -23,16 +23,23 @@ const customManifest = (tokens: Record<string, string> = {}) => ({
   motion_preset: 'command',
 });
 
-test('内置亮暗主题均合法、完整且具有不同稳定哈希', () => {
-  assert.equal(builtinUiThemes.length, 2);
+test('内置亮色、暗色与冷静运营主题均合法、完整且具有不同稳定哈希', () => {
+  assert.equal(builtinUiThemes.length, 3);
   builtinUiThemes.forEach(manifest => assert.equal(validateUiThemeManifest(manifest).valid, true));
 
   const light = resolveBuiltinUiTheme('zenvis-naive-light');
   const dark = resolveBuiltinUiTheme('zenvis-command-dark');
+  const calm = resolveBuiltinUiTheme('zenvis-calm-operations');
   assert.equal(light.color_scheme, 'light');
   assert.equal(dark.color_scheme, 'dark');
+  assert.equal(calm.color_scheme, 'light');
   assert.equal(dark.tokens['--zv-primary'], '#22c55e');
+  assert.equal(calm.tokens['--zv-primary'], '#2f5ee5');
+  assert.equal(calm.tokens['--zv-text-muted'], '#66758a');
+  assert.equal(calm.density, 'comfortable');
+  assert.equal(calm.motion_preset, 'subtle');
   assert.notEqual(light.token_hash, dark.token_hash);
+  assert.notEqual(light.token_hash, calm.token_hash);
 
   const changedNestedToken = resolveUiThemeManifest(customManifest({ '--zv-primary': '#16a34a' }));
   assert.notEqual(changedNestedToken.token_hash, dark.token_hash);
@@ -78,6 +85,33 @@ test('active envelope 与 frontend resource_ref 能解析到内置暗色主题',
   assert.equal(normalized.id, 'zenvis-command-dark');
   assert.equal(normalized.version, '1.0.0');
   assert.equal(normalized.color_scheme, 'dark');
+});
+
+test('内置 Calm Operations resource_ref 优先解析前端完整主题配方', () => {
+  const normalized = normalizeUiThemeManifest({
+    scope: 'global',
+    activation_version: 8,
+    theme: {
+      code: 'zenvis-calm-operations',
+      resource_ref: 'frontend://zenvis-calm-operations@1.0.0',
+      manifest: JSON.stringify({
+        schema_version: '1.0',
+        id: 'zenvis-calm-operations',
+        name: 'ZenVis Calm Operations',
+        version: '1.0.0',
+        color_scheme: 'light',
+        extends: 'zenvis-naive-light',
+        tokens: {},
+      }),
+      token_overrides: {},
+    },
+  });
+  assert.ok(normalized);
+  assert.equal(normalized.id, 'zenvis-calm-operations');
+  assert.equal(normalized.tokens['--zv-primary'], '#2f5ee5');
+  assert.equal(normalized.tokens['--zv-text-muted'], '#66758a');
+  assert.equal(normalized.density, 'comfortable');
+  assert.equal(normalized.motion_preset, 'subtle');
 });
 
 test('主题启动使用缓存同步挂载，并在后台刷新 active 接口', async () => {

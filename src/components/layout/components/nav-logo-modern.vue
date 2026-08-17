@@ -102,7 +102,7 @@ onMounted(loadSystemInfo);
     overflow: hidden;
     color: var(--zv-text);
     font-size: 19px;
-    font-weight: 760;
+    font-weight: 700;
     letter-spacing: -0.02em;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -112,7 +112,7 @@ onMounted(loadSystemInfo);
     margin-top: 4px;
     color: var(--zv-text-muted);
     font-size: 9px;
-    font-weight: 650;
+    font-weight: 600;
     letter-spacing: 0.15em;
     text-transform: uppercase;
   }

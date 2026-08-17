@@ -23,10 +23,30 @@ export const unwrapUiThemeRecord = input => {
 export const normalizeUiThemeManifest = input => {
   const rawInput = unwrapUiThemeRecord(input);
   const raw = rawInput && typeof rawInput === 'object' && !Array.isArray(rawInput) ? rawInput : {};
+  const reference = parseResourceRef(raw.resource_ref);
+  const referencedBuiltin = getBuiltinUiTheme(reference?.id || '');
+  if (referencedBuiltin) {
+    const candidate = {
+      ...referencedBuiltin,
+      version: raw.version || reference?.version || referencedBuiltin.version,
+      tokens: {
+        ...referencedBuiltin.tokens,
+        ...(raw.token_overrides || raw.tokens || {}),
+      },
+      chart_palette: {
+        ...referencedBuiltin.chart_palette,
+        ...(raw.chart_palette || {}),
+      },
+      density: raw.density || referencedBuiltin.density,
+      motion_preset: raw.motion_preset || referencedBuiltin.motion_preset,
+    };
+    const validation = validateUiThemeManifest(candidate);
+    return validation.valid ? validation.manifest : null;
+  }
+
   const directValidation = validateUiThemeManifest(extractUiThemeManifest(rawInput));
   if (directValidation.valid) return directValidation.manifest;
 
-  const reference = parseResourceRef(raw.resource_ref);
   const themeId = String(raw.code || reference?.id || raw.id || DEFAULT_UI_THEME_ID);
   const base = getBuiltinUiTheme(themeId) || getBuiltinUiTheme(reference?.id || '');
   const candidate = {
