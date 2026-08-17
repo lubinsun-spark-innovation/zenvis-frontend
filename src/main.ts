@@ -11,10 +11,13 @@ import router from './router';
 import pinia from './stores';
 
 import setupComponent from '@c/index';
+import { initializeUiTheme } from '@/theme/theme-runtime';
 
 import '@a/font/index.css';
 import '@a/styles/index.scss';
-async function initApp() {
+function initApp() {
+  initializeUiTheme();
+
   // 创建实例
   const app = createApp(RootApp)
     .use(pinia)

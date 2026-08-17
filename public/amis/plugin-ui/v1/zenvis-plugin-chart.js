@@ -3,9 +3,20 @@
 
   var updateTimer = 0;
   var chartModule = null;
-  var palette = global.ZenVisPluginChartPalette;
-  if (!palette) {
+  var fallbackPalette = global.ZenVisPluginChartPalette;
+  var palette = fallbackPalette;
+  if (!fallbackPalette) {
     throw new Error('ZenVisPluginChartPalette must load before zenvis-plugin-chart.js');
+  }
+
+  function readPalette() {
+    var context = global.ZenVisPluginUI && global.ZenVisPluginUI.getContext();
+    return Object.assign({}, fallbackPalette, (context && context.chartPalette) || {});
+  }
+
+  function isDarkScheme() {
+    var context = global.ZenVisPluginUI && global.ZenVisPluginUI.getContext();
+    return Boolean(context && context.colorScheme === 'dark');
   }
 
   function axisTheme(includeSplitLine) {
@@ -28,7 +39,7 @@
     var current = chart.getOption() || {};
     var patch = {
       backgroundColor: palette.surface,
-      darkMode: false,
+      darkMode: isDarkScheme(),
       textStyle: { color: palette.text },
     };
 
@@ -86,6 +97,7 @@
 
   function updateCharts() {
     updateTimer = 0;
+    palette = readPalette();
     try {
       chartModule = chartModule || global.amisRequire('echarts');
     } catch (_) {
@@ -105,6 +117,7 @@
     new MutationObserver(scheduleUpdate).observe(root, { childList: true, subtree: true });
     global.addEventListener('resize', scheduleUpdate);
     document.addEventListener('zenvis:ui-sync', scheduleUpdate);
+    document.addEventListener('zenvis:theme-update', scheduleUpdate);
   }
 
   global.ZenVisPluginChart = Object.freeze({

@@ -46,10 +46,7 @@ test('canonical tokens deterministically feed host, Element, Naive, plugin, and 
 
 test('public plugin styles expose only the frozen generic classes', () => {
   const adapter = read('public/amis/plugin-ui/v1/zenvis-amis-adapter.css');
-  const sources = [
-    read('public/amis/plugin-ui/v1/zenvis-plugin-ui.css'),
-    adapter,
-  ];
+  const sources = [read('public/amis/plugin-ui/v1/zenvis-plugin-ui.css'), adapter];
   const actual = new Set(
     sources.flatMap(source =>
       Array.from(source.matchAll(/\.((?:zv-)[a-zA-Z0-9_-]+)/g), match => match[1]),
@@ -89,9 +86,11 @@ test('profile resolution and handshake payload preserve explicit container owner
 
   const payloadBuilder = read('src/theme/plugin-frame-contract.ts');
   assert.match(payloadBuilder, /ZENVIS_UI_CONTRACT_VERSION/);
-  assert.match(payloadBuilder, /ZENVIS_UI_TOKENS/);
-  assert.match(payloadBuilder, /ZENVIS_UI_TOKEN_HASH/);
+  assert.match(payloadBuilder, /getActiveUiTheme/);
+  assert.match(payloadBuilder, /themeId: theme\.id/);
+  assert.match(payloadBuilder, /chartPalette: theme\.chart_palette/);
   assert.match(payloadBuilder, /lifecycle-error/);
+  assert.match(payloadBuilder, /theme-update/);
 });
 
 test('PluginFrame injects standard tokens only and closes ready/error/timeout lifecycle', () => {
@@ -104,16 +103,24 @@ test('PluginFrame injects standard tokens only and closes ready/error/timeout li
   assert.match(frame, /LOAD_TIMEOUT_MS = 12_000/);
   assert.match(frame, /payload\.tokens/);
   assert.match(frame, /const lifecycleFailed = ref\(false\)/);
+  assert.match(frame, /const readyReceived = ref\(false\)/);
   assert.match(frame, /const markError[\s\S]*?lifecycleFailed\.value = true/);
   assert.match(frame, /const startLoading[\s\S]*?lifecycleFailed\.value = false/);
+  assert.match(frame, /const startLoading[\s\S]*?readyReceived\.value = false/);
   assert.match(frame, /const handleLoad[\s\S]*?if \(lifecycleFailed\.value\) return/);
+  assert.match(frame, /descriptor\.contract === LEGACY_UI_SCHEMA_VERSION/);
+  assert.match(frame, /frameWindow\?\.ZenVisPluginUI/);
+  assert.match(frame, /const acceptPluginReady[\s\S]*?readyReceived\.value = true/);
+  assert.match(frame, /const handleLoad[\s\S]*?if \(readyReceived\.value\)/);
+  assert.match(frame, /UI_THEME_CHANGE_EVENT/);
+  assert.match(frame, /handleThemeChange[\s\S]*?profile\.value === 'standard'/);
 
   const lifecycleGuard = frame.indexOf('if (!isPluginLifecycleMessage(event.data)) return;');
   const earlyError = frame.indexOf("if (event.data.type === 'zenvis:plugin-error')");
-  const readyGate = frame.indexOf('if (!frameLoaded.value || lifecycleFailed.value) return;');
+  const acceptReady = frame.indexOf('acceptPluginReady(event.data);');
   assert.ok(
-    lifecycleGuard >= 0 && lifecycleGuard < earlyError && earlyError < readyGate,
-    'valid lifecycle errors must latch before the iframe load gate',
+    lifecycleGuard >= 0 && lifecycleGuard < earlyError && earlyError < acceptReady,
+    'valid lifecycle errors must latch before accepting early ready messages',
   );
   assert.match(
     frame,
@@ -149,12 +156,15 @@ test('runtime and browser fixture implement the versioned host handshake', () =>
   assert.match(runtime, /profile\) !== 'standard'/);
   assert.match(runtime, /trustedHostOrigin = event\.origin/);
   assert.match(runtime, /zenvis:plugin-ready/);
+  assert.match(runtime, /context\.colorScheme \|\| 'light'/);
+  assert.match(runtime, /zenvis:theme-update/);
+  assert.match(runtime, /chartPalette/);
   assert.match(runtime, /zenvis:plugin-error/);
   assert.match(fixture, /zenvis:ui-sync/);
   pluginClasses.forEach(name => assert.ok(fixture.includes(name), `fixture misses ${name}`));
 });
 
-test('host application remains light-only outside immersive plugin content', () => {
+test('host application resolves light and dark themes while immersive content remains isolated', () => {
   const sources = [
     'src/App.vue',
     'src/assets/styles/design-system.scss',
@@ -164,10 +174,11 @@ test('host application remains light-only outside immersive plugin content', () 
     'src/views/policy/components/rightEdit.vue',
   ].map(read);
   assert.equal(existsSync(resolve(repositoryRoot, 'src/composables/use-theme-mode.ts')), false);
-  assert.doesNotMatch(
-    sources.join('\n'),
-    /useThemeMode|zenvisDarkTheme|vs-dark|zenvis:theme|data-theme=['"]dark|切换为深色模式/,
-  );
+  const source = sources.join('\n');
+  assert.match(source, /darkTheme/);
+  assert.match(read('src/theme/theme-registry.mjs'), /zenvis-command-dark/);
+  assert.match(read('src/theme/theme-runtime.ts'), /zenvis:theme-change/);
+  assert.doesNotMatch(source, /useThemeMode|vs-dark|切换为深色模式/);
 });
 
 test('starter templates are present and the AMIS template is valid JSON', () => {

@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
-import { getAuthToken, hasLoginSession, setAuthToken } from '@u/auth-session';
+import { getAuthToken, hasLoginSession, isSuperAdministrator, setAuthToken } from '@u/auth-session';
 import layout_blank from '@c/layout/layout-blank-modern.vue';
 import layout_header from '@c/layout/layout-header-modern.vue';
 import layout_full from '@c/layout/layout-full-modern.vue';
@@ -117,7 +117,13 @@ const basicRoutes: Array<RouteRecordRaw> = [
       {
         path: 'about',
         component: () => import('@v/about/index.vue'),
-        name: 'system-about'
+        name: 'system-about',
+      },
+      {
+        path: 'ui-themes',
+        component: () => import('@v/ui-theme/index.vue'),
+        name: 'ui-management',
+        meta: { requiresSuperAdmin: true }
       }
     ]
   }
@@ -190,6 +196,10 @@ router.beforeEach(to => {
 
   if (isLoggedIn && to.path === LOGIN_PATH) {
     return HOME_PATH;
+  }
+
+  if (to.meta.requiresSuperAdmin && !isSuperAdministrator()) {
+    return { path: '/ExceptionPage403', replace: true };
   }
 
   return true;

@@ -43,6 +43,7 @@ import { useRouter } from 'vue-router';
 import { NButton, NSpin } from 'naive-ui';
 
 import { buildPluginUiPayload, normalizePluginUiProfile } from '@/theme/plugin-frame-contract';
+import { UI_THEME_CHANGE_EVENT } from '@/theme/theme-runtime';
 import {
   ZENVIS_UI_CONTRACT_VERSION,
   ZENVIS_UI_RENDERER,
@@ -58,10 +59,18 @@ type PluginLifecycleMessage = {
   type: 'zenvis:plugin-ready' | 'zenvis:plugin-error';
   contractVersion?: string;
   renderer?: string;
+  version?: string;
+  contract?: string;
   reason?: string;
 };
 
+type PluginRuntimeDescriptor = Pick<
+  PluginLifecycleMessage,
+  'contractVersion' | 'renderer' | 'version' | 'contract'
+>;
+
 const LOAD_TIMEOUT_MS = 12_000;
+const LEGACY_UI_SCHEMA_VERSION = '1';
 const ALLOWED_PLUGIN_ROUTE_PREFIXES = [
   '/service/low-code-app/',
   '/service/low-code-page/',
@@ -86,6 +95,7 @@ const errorMessage = ref('');
 const frameRef = ref<HTMLIFrameElement | null>(null);
 const frameLoaded = ref(false);
 const lifecycleFailed = ref(false);
+const readyReceived = ref(false);
 const reloadKey = ref(0);
 const iframeSrc = computed(() => props.src);
 const profile = computed(() => normalizePluginUiProfile(props.profile));
@@ -114,6 +124,7 @@ const startLoading = () => {
   clearLoadTimeout();
   frameLoaded.value = false;
   lifecycleFailed.value = false;
+  readyReceived.value = false;
   status.value = 'loading';
   errorMessage.value = '';
   timeoutId = window.setTimeout(() => {
@@ -142,7 +153,9 @@ const syncIframeUi = () => {
       if (root) {
         root.dataset.zenvisUi = ZENVIS_UI_CONTRACT_VERSION;
         root.dataset.zenvisProfile = 'standard';
-        root.style.colorScheme = 'light';
+        root.dataset.zenvisTheme = payload.themeId;
+        root.dataset.zenvisScheme = payload.colorScheme;
+        root.style.colorScheme = payload.colorScheme;
         Object.entries(payload.tokens).forEach(([name, value]) => {
           root.style.setProperty(name, value);
         });
@@ -155,6 +168,10 @@ const syncIframeUi = () => {
   frame.contentWindow.postMessage(payload, targetOrigin());
 };
 
+const handleThemeChange = () => {
+  if (profile.value === 'standard') syncIframeUi();
+};
+
 const isPluginNavigationMessage = (value: unknown): value is PluginNavigationMessage => {
   if (!value || typeof value !== 'object') return false;
   const message = value as Partial<PluginNavigationMessage>;
@@ -165,6 +182,53 @@ const isPluginLifecycleMessage = (value: unknown): value is PluginLifecycleMessa
   if (!value || typeof value !== 'object') return false;
   const message = value as Partial<PluginLifecycleMessage>;
   return message.type === 'zenvis:plugin-ready' || message.type === 'zenvis:plugin-error';
+};
+
+const normalizePluginRuntime = (descriptor: PluginRuntimeDescriptor) => {
+  if (
+    descriptor.contractVersion === ZENVIS_UI_CONTRACT_VERSION &&
+    descriptor.renderer === ZENVIS_UI_RENDERER
+  ) {
+    return {
+      contractVersion: descriptor.contractVersion,
+      renderer: descriptor.renderer,
+    };
+  }
+  if (
+    descriptor.version === ZENVIS_UI_CONTRACT_VERSION &&
+    descriptor.contract === LEGACY_UI_SCHEMA_VERSION
+  ) {
+    return {
+      contractVersion: descriptor.version,
+      renderer: ZENVIS_UI_RENDERER,
+    };
+  }
+  return null;
+};
+
+const acceptPluginReady = (descriptor: PluginRuntimeDescriptor) => {
+  if (lifecycleFailed.value) return;
+  if (!normalizePluginRuntime(descriptor)) {
+    markError(`插件 UI 契约不兼容：需要 ${ZENVIS_UI_CONTRACT_VERSION} / ${ZENVIS_UI_RENDERER}。`);
+    return;
+  }
+  readyReceived.value = true;
+  if (frameLoaded.value) markReady();
+};
+
+const detectSameOriginRuntime = () => {
+  if (targetOrigin() !== window.location.origin) return false;
+  try {
+    const frameWindow = frameRef.value?.contentWindow as
+      | (Window & { ZenVisPluginUI?: PluginRuntimeDescriptor })
+      | null
+      | undefined;
+    if (!frameWindow?.ZenVisPluginUI) return false;
+    acceptPluginReady(frameWindow.ZenVisPluginUI);
+    return true;
+  } catch {
+    return false;
+  }
 };
 
 const handleFrameMessage = (event: MessageEvent) => {
@@ -184,22 +248,22 @@ const handleFrameMessage = (event: MessageEvent) => {
     markError(event.data.reason || '插件报告了未知运行时错误。');
     return;
   }
-  if (!frameLoaded.value || lifecycleFailed.value) return;
-  if (
-    event.data.contractVersion !== ZENVIS_UI_CONTRACT_VERSION ||
-    event.data.renderer !== ZENVIS_UI_RENDERER
-  ) {
-    markError(`插件 UI 契约不兼容：需要 ${ZENVIS_UI_CONTRACT_VERSION} / ${ZENVIS_UI_RENDERER}。`);
-    return;
-  }
-  markReady();
+  acceptPluginReady(event.data);
 };
 
 const handleLoad = () => {
   frameLoaded.value = true;
   if (lifecycleFailed.value) return;
   syncIframeUi();
-  if (profile.value !== 'standard') markReady();
+  if (profile.value !== 'standard') {
+    markReady();
+    return;
+  }
+  if (readyReceived.value) {
+    markReady();
+    return;
+  }
+  detectSameOriginRuntime();
 };
 
 const handleFrameError = () => markError('浏览器无法载入插件资源。');
@@ -219,10 +283,12 @@ watch(
 
 onMounted(() => {
   window.addEventListener('message', handleFrameMessage);
+  window.addEventListener(UI_THEME_CHANGE_EVENT, handleThemeChange);
   startLoading();
 });
 onBeforeUnmount(() => {
   window.removeEventListener('message', handleFrameMessage);
+  window.removeEventListener(UI_THEME_CHANGE_EVENT, handleThemeChange);
   clearLoadTimeout();
 });
 </script>

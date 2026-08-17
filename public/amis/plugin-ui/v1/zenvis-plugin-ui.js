@@ -26,7 +26,9 @@
     var root = targetDocument.documentElement;
     root.dataset.zenvisUi = CONTRACT_VERSION;
     root.dataset.zenvisProfile = 'standard';
-    root.style.colorScheme = 'light';
+    root.dataset.zenvisTheme = context.themeId || 'zenvis-naive-light';
+    root.dataset.zenvisScheme = context.colorScheme || 'light';
+    root.style.colorScheme = context.colorScheme || 'light';
     Object.keys((context && context.tokens) || {}).forEach(function (name) {
       if (name.indexOf('--zv-') === 0) root.style.setProperty(name, context.tokens[name]);
     });
@@ -110,6 +112,7 @@
     if (hostOrigin() && event.origin !== hostOrigin()) return;
     if (!event.data || event.data.type !== 'zenvis:ui') return;
     trustedHostOrigin = event.origin;
+    var previousContext = currentContext;
     currentContext = Object.freeze({
       contractVersion: event.data.contractVersion,
       renderer: event.data.renderer,
@@ -118,13 +121,26 @@
       timezone: event.data.timezone,
       density: event.data.density,
       reducedMotion: Boolean(event.data.reducedMotion),
+      themeId: event.data.themeId,
+      themeVersion: event.data.themeVersion,
+      colorScheme: event.data.colorScheme === 'dark' ? 'dark' : 'light',
+      motionPreset: event.data.motionPreset,
       tokenHash: event.data.tokenHash,
       tokens: Object.freeze(event.data.tokens || {}),
       capabilities: Object.freeze(event.data.capabilities || []),
+      chartPalette: Object.freeze(event.data.chartPalette || {}),
     });
     applyStandardContext(currentContext, document);
     document.dispatchEvent(new CustomEvent('zenvis:ui-sync', { detail: currentContext }));
-    emitReady();
+    if (previousContext) {
+      document.dispatchEvent(
+        new CustomEvent('zenvis:theme-update', {
+          detail: currentContext,
+        }),
+      );
+    } else {
+      emitReady();
+    }
   }
 
   var api = Object.freeze({

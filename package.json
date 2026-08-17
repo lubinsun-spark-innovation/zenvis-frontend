@@ -14,8 +14,8 @@
     "ui:generate": "node scripts/generate-ui-contract.mjs",
     "ui:check": "node scripts/generate-ui-contract.mjs --check",
     "preview": "vite preview",
-    "test": "node scripts/generate-ui-contract.mjs --check && vue-tsc --noEmit && node --test src/service/api/api-user-contract.test.mts src/theme/plugin-ui-contract.test.mts src/utils/report-document-format.test.mts src/views/dih/components/data-visualization-menu-route.test.mts src/views/retrieval/components/filter-criterion-values.test.mts src/views/retrieval/components/filter-query.test.mts",
-    "test:unit": "node --test src/service/api/api-user-contract.test.mts src/theme/plugin-ui-contract.test.mts src/utils/report-document-format.test.mts src/views/dih/components/data-visualization-menu-route.test.mts src/views/retrieval/components/filter-criterion-values.test.mts src/views/retrieval/components/filter-query.test.mts",
+    "test": "node scripts/generate-ui-contract.mjs --check && vue-tsc --noEmit && node --test src/service/api/api-user-contract.test.mts src/theme/plugin-ui-contract.test.mts src/theme/theme-runtime.test.mts src/utils/report-document-format.test.mts src/views/dih/components/data-visualization-menu-route.test.mts src/views/retrieval/components/filter-criterion-values.test.mts src/views/retrieval/components/filter-query.test.mts",
+    "test:unit": "node --test src/service/api/api-user-contract.test.mts src/theme/plugin-ui-contract.test.mts src/theme/theme-runtime.test.mts src/utils/report-document-format.test.mts src/views/dih/components/data-visualization-menu-route.test.mts src/views/retrieval/components/filter-criterion-values.test.mts src/views/retrieval/components/filter-query.test.mts",
     "test:e2e": "playwright test"
   },
   "dependencies": {

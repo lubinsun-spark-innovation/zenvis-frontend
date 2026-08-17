@@ -1,5 +1,10 @@
 <template>
-  <n-config-provider :theme-overrides="zenvisLightTheme" :locale="zhCN" :date-locale="dateZhCN">
+  <n-config-provider
+    :theme="naiveBaseTheme"
+    :theme-overrides="naiveThemeOverrides"
+    :locale="zhCN"
+    :date-locale="dateZhCN"
+  >
     <n-loading-bar-provider>
       <n-dialog-provider>
         <n-notification-provider placement="top-right" :max="4">
@@ -17,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import {
   NConfigProvider,
   NDialogProvider,
@@ -26,6 +31,7 @@ import {
   NMessageProvider,
   NNotificationProvider,
   dateZhCN,
+  darkTheme,
   zhCN,
 } from 'naive-ui';
 import elementLocale from 'element-plus/es/locale/lang/zh-cn';
@@ -34,12 +40,17 @@ import 'dayjs/locale/zh-cn';
 
 import AiFloatBall from './components/ai-float-ball.vue';
 import { SystemService } from '@/service/api';
-import { zenvisLightTheme } from '@/theme/naive-theme';
+import { useUiThemeRuntime } from '@/theme/theme-runtime';
 import { getAssetUrl } from '@u/url';
 
 defineOptions({ name: 'RootApp' });
 
 dayjs.locale('zh-cn');
+
+const { activeTheme, naiveThemeOverrides } = useUiThemeRuntime();
+const naiveBaseTheme = computed(() =>
+  activeTheme.value.color_scheme === 'dark' ? darkTheme : null,
+);
 
 const updateFavicon = (iconUrl: string) => {
   const favicon = document.querySelector('link[rel="icon"]') as HTMLLinkElement | null;

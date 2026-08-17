@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://zenvis.local/schemas/ui-theme-1.0.json",
+  "title": "ZenVis UI Theme Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "name", "version", "color_scheme", "tokens"],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?$"
+    },
+    "color_scheme": {
+      "enum": ["light", "dark"]
+    },
+    "extends": {
+      "enum": ["zenvis-naive-light", "zenvis-command-dark"]
+    },
+    "tokens": {
+      "type": "object",
+      "maxProperties": 96,
+      "propertyNames": {
+        "pattern": "^--zv-[a-z0-9-]+$"
+      },
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 240,
+        "not": {
+          "pattern": "(javascript\\s*:|(?:https?|data|ftp|file)\\s*:|//|expression\\s*\\(|@import|url\\s*\\(|(?:var|calc|color-mix|image-set|attr|env)\\s*\\(|[{};]|<\\/?(?:script|style|svg|html))"
+        }
+      }
+    },
+    "chart_palette": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "primary": { "type": "string", "maxLength": 120 },
+        "cyan": { "type": "string", "maxLength": 120 },
+        "success": { "type": "string", "maxLength": 120 },
+        "warning": { "type": "string", "maxLength": 120 },
+        "danger": { "type": "string", "maxLength": 120 },
+        "heading": { "type": "string", "maxLength": 120 },
+        "text": { "type": "string", "maxLength": 120 },
+        "muted": { "type": "string", "maxLength": 120 },
+        "line": { "type": "string", "maxLength": 120 },
+        "split": { "type": "string", "maxLength": 120 },
+        "surface": { "type": "string", "maxLength": 120 },
+        "pieBorder": { "type": "string", "maxLength": 120 }
+      }
+    },
+    "density": {
+      "enum": ["compact", "comfortable"]
+    },
+    "motion_preset": {
+      "enum": ["none", "subtle", "standard", "command"]
+    }
+  }
+}

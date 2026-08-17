@@ -52,6 +52,25 @@ export function getPermissionList<T = unknown>(): T | null {
   return ls.get(AUTH_SESSION_KEYS.permission) || null;
 }
 
+export function isSuperAdministrator(
+  input: unknown = getUserInfo(),
+  permissions: unknown = getPermissionList(),
+): boolean {
+  const user = input && typeof input === 'object' ? (input as Record<string, unknown>) : {};
+  const explicit = user.is_super_admin ?? user.isSuperAdmin;
+  if (explicit === true || explicit === 1) return true;
+
+  const hasThemeManagement = (items: unknown): boolean => {
+    if (!Array.isArray(items)) return false;
+    return items.some(item => {
+      if (!item || typeof item !== 'object') return false;
+      const permission = item as Record<string, unknown>;
+      return permission.route === 'ui-management' || hasThemeManagement(permission.children);
+    });
+  };
+  return hasThemeManagement(permissions);
+}
+
 export function hasLoginSession(): boolean {
   return Boolean(ls.get(AUTH_SESSION_KEYS.login) || getAuthToken());
 }
@@ -78,4 +97,3 @@ export function clearLoginSession(): void {
     ls.remove(key);
   });
 }
-
