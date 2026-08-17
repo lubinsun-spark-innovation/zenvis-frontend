@@ -1,6 +1,12 @@
-# ZenVis Plugin UI Kit v1
+# ZenVis Plugin UI Contract 1.0.0
 
-ZenVis Plugin UI Kit 是宿主提供的亮色插件界面契约。插件负责业务结构和数据，宿主统一负责颜色、间距、卡片、表格、交互反馈、响应式和图表可读性。
+ZenVis Plugin UI Contract 是宿主提供的界面协议。普通插件只负责业务结构和数据，由宿主统一负责颜色、间距、卡片、表格、交互反馈、响应式和图表可读性。当前渲染器契约为 `amis@6.7`。
+
+## UI Profile
+
+- `standard`：普通菜单、低代码应用和低代码看板的默认值。宿主注入 Token 与 AMIS 适配层，插件不得自带主题。
+- `immersive`：仅用于驾驶舱、监控大屏等明确需要独立视觉的 HTML 内容。宿主保留页面自己的主题，不注入样式。
+- `external`：外部链接应用。宿主只提供安全容器和生命周期，不干预页面主题。
 
 ## 公共资源
 
@@ -9,23 +15,24 @@ AMIS 宿主页面已经自动加载以下资源，普通低代码插件不需要
 ~~~html
 <link rel="stylesheet" href="/amis/plugin-ui/v1/zenvis-plugin-ui.css" />
 <script src="/amis/plugin-ui/v1/zenvis-plugin-ui.js"></script>
+<script src="/amis/plugin-ui/v1/zenvis-plugin-chart-palette.js"></script>
 <script src="/amis/plugin-ui/v1/zenvis-plugin-chart.js"></script>
 ~~~
 
-独立 HTML 插件应按上述顺序主动引用。UI Kit v1 仅提供亮色模式。
+`standard` 的独立 HTML 插件应按上述顺序主动引用；`immersive` 页面不要引用这些资源。
 
 ## 插件类型
 
 ### AMIS JSON
 
 - 优先使用 page、service、grid、panel、card、crud、form 和 chart。
-- 使用 zv-page、zv-metric-card、zv-chart-card、zv-table-shell 等语义类。
+- 只使用本契约列出的 `zv-*` 语义类。
 - 不要使用背景色工具类表达业务含义。
 - 不要在 tpl 中写固定文字颜色、背景色、阴影或圆角。
 
 参考 templates/amis-dashboard.json。
 
-### 独立 HTML
+### Standard HTML
 
 - 引入 UI Kit CSS 和运行时脚本。
 - 使用 window.ZenVisPluginUI.getToken() 读取设计变量。
@@ -36,7 +43,13 @@ AMIS 宿主页面已经自动加载以下资源，普通低代码插件不需要
 
 ### 独立 Vue 页面
 
-只有复杂交互确实无法由 AMIS 表达时才单独构建 Vue 页面。页面应使用 Naive UI 亮色主题，并继续引用 UI Kit Token；不要在每个插件复制一套 themeOverrides。
+只有复杂交互确实无法由 AMIS 表达时才单独构建 Vue 页面。标准页面应继续引用 UI Kit Token；不要在每个插件复制一套 themeOverrides。
+
+## 稳定语义类
+
+`zv-page`、`zv-workspace`、`zv-visual-page`、`zv-crud-workspace`、`zv-hero`、`zv-hero__chips`、`zv-hero__status`、`zv-summary-bar`、`zv-summary-metric`、`zv-summary-copy`、`zv-metric-card`、`zv-chart-card`、`zv-table-shell`、`zv-truncate`、`zv-wrap`。
+
+不要新增插件名称前缀的宿主选择器。扩充语义类必须发布新契约版本。
 
 ## 稳定 Token
 
@@ -68,4 +81,4 @@ v1 保证以下 Token 可用：
 4. 确认页面没有固定文字颜色和背景色。
 5. 确认 iframe 加载、表格滚动和图表 resize 正常。
 
-v1 的破坏性变更必须发布到新的版本目录，不允许直接改变既有插件的语义。
+契约的破坏性变更必须发布到新的版本目录，不允许直接改变既有插件的语义。

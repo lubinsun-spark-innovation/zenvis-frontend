@@ -45,6 +45,7 @@ import JSEncrypt from 'jsencrypt';
 
 import Password from './nav-password.vue';
 import { UserService } from '@/service/api';
+import { readExplicitHtmlUiProfile } from '@/theme/plugin-profile.mjs';
 import { clearLoginSession, getPermissionList, getUserInfo } from '@u/auth-session';
 
 defineOptions({ name: 'NavMenuModern' });
@@ -54,6 +55,8 @@ type PermissionItem = {
   name: string;
   route?: string;
   params?: string;
+  ui_profile?: string;
+  uiProfile?: string;
   superscript?: string;
   children?: PermissionItem[];
 };
@@ -111,9 +114,14 @@ const goMenu = (key: string) => {
   const item = menuLookup.get(key);
   if (!item?.route) return;
   currentKey.value = key;
+  const uiProfile =
+    item.route === 'html-page'
+      ? readExplicitHtmlUiProfile(item.ui_profile ?? item.uiProfile)
+      : undefined;
   router.push({
     name: item.route,
     params: { menuParams: item.params },
+    query: uiProfile ? { ui_profile: uiProfile } : undefined,
   });
 };
 

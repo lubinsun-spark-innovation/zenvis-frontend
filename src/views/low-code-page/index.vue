@@ -1,5 +1,5 @@
 <template>
-  <PluginFrame :src="iframeUrl" title="插件页面" />
+  <PluginFrame :src="iframeUrl" title="插件页面" profile="standard" />
 </template>
 
 <script setup lang="ts">
@@ -41,6 +41,6 @@ watch(
   () => {
     iframeUrl.value = buildIframeUrl();
   },
-  { deep: true }
+  { deep: true },
 );
 </script>

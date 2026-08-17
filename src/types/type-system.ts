@@ -24,5 +24,6 @@ export type Dashboard = {
   htmlPath: string;
   isDefault: boolean;
   source?: string;
+  uiProfile?: string;
   updateTime: string;
-}
+};

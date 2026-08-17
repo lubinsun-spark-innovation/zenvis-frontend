@@ -60,6 +60,7 @@
   import JSEncrypt from 'jsencrypt'
   import { ElMessage, ElMessageBox } from 'element-plus';
   import { clearLoginSession, getPermissionList, getUserInfo } from '@u/auth-session';
+  import { readExplicitHtmlUiProfile } from '@/theme/plugin-profile.mjs';
   const router = useRouter();
   const menuList = getPermissionList<any[]>() || []
   let showPassword = ref<boolean>(false)
@@ -67,9 +68,14 @@
   const current = ref<string>(router.currentRoute.value.name as string);
   const goMenu = (item: any) => {
     if (!item?.route) return;
+    const uiProfile =
+      item.route === 'html-page'
+        ? readExplicitHtmlUiProfile(item.ui_profile ?? item.uiProfile)
+        : undefined;
     router.push({
       name: item.route,
       params: { menuParams: item.params },
+      query: uiProfile ? { ui_profile: uiProfile } : undefined,
     });
   }
   const logOut = () => {

@@ -1,11 +1,10 @@
 {
   "type": "page",
   "title": "插件数据总览",
-  "className": "zv-page",
+  "className": "zv-page zv-workspace",
   "body": [
     {
       "type": "grid",
-      "className": "zv-grid zv-grid--metrics",
       "columns": [
         {
           "md": 3,
@@ -13,10 +12,10 @@
           "xs": 12,
           "body": {
             "type": "card",
-            "className": "zv-metric-card zv-tone-primary",
+            "className": "zv-metric-card",
             "body": {
               "type": "tpl",
-              "tpl": "<span class='zv-metric-label'>资产总数</span><strong class='zv-metric-value'>${assetTotal || 0}</strong><span class='zv-metric-help'>当前纳管资产</span>"
+              "tpl": "<span>资产总数</span><strong>${assetTotal || 0}</strong><span>当前纳管资产</span>"
             }
           }
         },
@@ -26,10 +25,10 @@
           "xs": 12,
           "body": {
             "type": "card",
-            "className": "zv-metric-card zv-tone-success",
+            "className": "zv-metric-card",
             "body": {
               "type": "tpl",
-              "tpl": "<span class='zv-metric-label'>正常运行</span><strong class='zv-metric-value'>${healthy || 0}</strong><span class='zv-metric-help'>实时健康状态</span>"
+              "tpl": "<span>正常运行</span><strong>${healthy || 0}</strong><span>实时健康状态</span>"
             }
           }
         }

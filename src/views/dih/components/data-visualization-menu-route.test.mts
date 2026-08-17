@@ -95,6 +95,39 @@ test('html-page 根据当前文件名打开页面，不复用 user-event-page', 
   );
 });
 
+test('html-page 菜单只携带显式新契约 profile，旧资源保持缺省回退', () => {
+  const standardRoute = buildMenuTargetRoute({
+    type: 'HTML_PAGE',
+    params: '/html-page/standard.html',
+    ui_profile: 'STANDARD',
+  });
+  assert.ok(standardRoute && 'name' in standardRoute);
+  assert.deepEqual(standardRoute.query, { ui_profile: 'standard' });
+
+  const camelCaseRoute = buildMenuTargetRoute({
+    type: 'HTML_PAGE',
+    params: '/html-page/immersive.html',
+    uiProfile: 'IMMERSIVE',
+  });
+  assert.ok(camelCaseRoute && 'name' in camelCaseRoute);
+  assert.deepEqual(camelCaseRoute.query, { ui_profile: 'immersive' });
+
+  const legacyRoute = buildMenuTargetRoute({
+    type: 'HTML_PAGE',
+    params: '/html-page/legacy.html',
+    ui_profile: 'LEGACY_UNSPECIFIED',
+  });
+  assert.ok(legacyRoute && 'name' in legacyRoute);
+  assert.equal(legacyRoute.query, undefined);
+
+  const missingRoute = buildMenuTargetRoute({
+    type: 'HTML_PAGE',
+    params: '/html-page/missing.html',
+  });
+  assert.ok(missingRoute && 'name' in missingRoute);
+  assert.equal(missingRoute.query, undefined);
+});
+
 test('HTML 看板页面配置能匹配对应的数据看板记录', () => {
   const dashboard = {
     dashboardId: '402',

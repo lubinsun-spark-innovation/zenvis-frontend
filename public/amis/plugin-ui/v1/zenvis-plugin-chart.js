@@ -3,20 +3,10 @@
 
   var updateTimer = 0;
   var chartModule = null;
-  var palette = Object.freeze({
-    primary: '#4f6ef7',
-    cyan: '#22b8cf',
-    success: '#12b981',
-    warning: '#f59e0b',
-    danger: '#ef476f',
-    heading: '#172033',
-    text: '#5f6b7e',
-    muted: '#8b97aa',
-    line: '#d3dbe8',
-    split: '#edf1f6',
-    surface: 'transparent',
-    pieBorder: '#ffffff',
-  });
+  var palette = global.ZenVisPluginChartPalette;
+  if (!palette) {
+    throw new Error('ZenVisPluginChartPalette must load before zenvis-plugin-chart.js');
+  }
 
   function axisTheme(includeSplitLine) {
     var option = {

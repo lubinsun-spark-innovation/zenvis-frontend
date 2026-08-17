@@ -1,15 +1,20 @@
 <template>
-  <PluginFrame :src="iframeUrl" title="可视化页面" />
+  <PluginFrame :src="iframeUrl" title="可视化页面" :profile="uiProfile" />
 </template>
 
 <script setup lang="ts">
-import { watch, ref } from 'vue';
+import { computed, watch, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { sanitizeIframeUrl } from '@u/url';
 import PluginFrame from '@c/plugin-frame.vue';
+import { resolveHtmlMenuUiProfile } from '@/theme/plugin-profile.mjs';
 
 const route = useRoute();
 const iframeUrl = ref<string>(sanitizeIframeUrl('')); // 默认值为 404 页面
+const uiProfile = computed(() => {
+  const value = route.query.ui_profile;
+  return resolveHtmlMenuUiProfile(Array.isArray(value) ? value[0] : value);
+});
 
 // 提取路径参数并解码 Base64
 function getDecodedUrl(): string {
@@ -34,6 +39,6 @@ watch(
   () => {
     iframeUrl.value = getDecodedUrl();
   },
-  { deep: true }
+  { deep: true },
 );
 </script>

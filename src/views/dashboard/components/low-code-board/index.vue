@@ -1,5 +1,5 @@
 <template>
-  <PluginFrame :src="iframeUrl" title="低代码看板" />
+  <PluginFrame :src="iframeUrl" title="低代码看板" profile="standard" />
 </template>
 
 <script setup lang="ts">

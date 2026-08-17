@@ -1,3 +1,5 @@
+import { readExplicitHtmlUiProfile } from '../../../theme/plugin-profile.mjs';
+
 export type VisualizationMenuRecord = Record<string, unknown> & {
   id?: string | number;
   name?: string;
@@ -13,10 +15,12 @@ export type VisualizationMenuRecord = Record<string, unknown> & {
   configType?: string;
   fileName?: string;
   htmlPath?: string;
+  ui_profile?: string;
+  uiProfile?: string;
 };
 
 export type VisualizationMenuTargetRoute =
-  | { name: string; params: { menuParams: string } }
+  | { name: string; params: { menuParams: string }; query?: { ui_profile: string } }
   | { path: string };
 
 const encodeUtf8Base64 = (value: string) => {
@@ -60,7 +64,15 @@ export const buildMenuTargetRoute = (
     return null;
   }
   if (routeKey === 'html-page' || routeKey === 'external-app') {
-    return params ? { name: routeKey, params: { menuParams: encodeUtf8Base64(params) } } : null;
+    if (!params) return null;
+    const rawProfile = record.ui_profile ?? record.uiProfile;
+    const uiProfile =
+      routeKey === 'html-page' ? readExplicitHtmlUiProfile(rawProfile) : undefined;
+    return {
+      name: routeKey,
+      params: { menuParams: encodeUtf8Base64(params) },
+      ...(uiProfile ? { query: { ui_profile: uiProfile } } : {}),
+    };
   }
   if (routeKey === 'low-code-app' || routeKey === 'low-code-page' || routeKey === 'policy-config') {
     return params ? { name: routeKey, params: { menuParams: params } } : null;

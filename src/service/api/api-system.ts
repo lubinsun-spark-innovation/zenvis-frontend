@@ -29,6 +29,7 @@ type RawDashboard = {
   html_path?: string;
   is_default?: boolean | number;
   source?: string;
+  ui_profile?: string;
   update_time?: string;
 };
 
@@ -60,6 +61,7 @@ const normalizeDashboard = (item: RawDashboard): Dashboard => ({
   htmlPath: item.html_path || '',
   isDefault: Boolean(item.is_default),
   source: item.source || '',
+  uiProfile: item.ui_profile || '',
   updateTime: item.update_time || '',
 });
 
@@ -105,17 +107,21 @@ export class SystemService {
   }
 
   static async updateSystemInfo(params: SystemInfo): Promise<void> {
-    await request<void>(`${prefix}/about/info/update`, {
-      system_title: params.systemTitle,
-      product_name: params.productName,
-      product_version: params.productVersion,
-      product_introduction: params.productIntroduction,
-      copyright: params.copyright,
-      service_phone: params.servicePhone,
-      service_email: params.serviceEmail,
-      technical_email: params.technicalEmail,
-      integrate_link: params.integrateLink,
-    }, 'PUT');
+    await request<void>(
+      `${prefix}/about/info/update`,
+      {
+        system_title: params.systemTitle,
+        product_name: params.productName,
+        product_version: params.productVersion,
+        product_introduction: params.productIntroduction,
+        copyright: params.copyright,
+        service_phone: params.servicePhone,
+        service_email: params.serviceEmail,
+        technical_email: params.technicalEmail,
+        integrate_link: params.integrateLink,
+      },
+      'PUT',
+    );
     SystemService.invalidateSystemInfoCache();
   }
 

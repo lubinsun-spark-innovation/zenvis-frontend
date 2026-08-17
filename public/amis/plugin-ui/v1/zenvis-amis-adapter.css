@@ -1,0 +1,684 @@
+html,
+body,
+.app-wrapper {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  margin: 0;
+  color: var(--zv-text);
+  background: var(--zv-canvas);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  overflow: hidden;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+::selection {
+  color: var(--zv-text-on-accent);
+  background: rgb(var(--zv-primary-rgb) / 72%);
+}
+
+/* App shell and navigation */
+.amis-scope .cxd-Layout {
+  min-height: 100%;
+  color: var(--zv-text);
+  background: var(--zv-canvas);
+}
+
+.amis-scope .cxd-Layout-aside,
+.amis-scope .cxd-Layout-asideWrap,
+.amis-scope .cxd-Layout-asideInner {
+  width: var(--zv-aside-width) !important;
+  max-width: var(--zv-aside-width) !important;
+  flex: 0 0 var(--zv-aside-width);
+  min-width: var(--zv-aside-width);
+  color: var(--zv-sidebar-text);
+  background: radial-gradient(circle at 22% -12%, rgb(var(--zv-primary-rgb) / 35%), transparent 34%),
+    linear-gradient(180deg, var(--zv-sidebar-raised), var(--zv-sidebar));
+}
+
+.amis-scope .cxd-Layout-asideWrap {
+  border-right: 1px solid rgb(var(--zv-on-accent-rgb) / 6%);
+  box-shadow: 10px 0 35px rgb(var(--zv-shadow-rgb) / 10%);
+}
+
+.amis-scope .cxd-Layout-brand,
+.amis-scope .cxd-Layout-brandBar {
+  min-height: 68px;
+  color: var(--zv-text-on-accent);
+  border-bottom: 1px solid rgb(var(--zv-on-accent-rgb) / 8%);
+  background: transparent;
+}
+
+.amis-scope .cxd-AppLogo-html {
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+.amis-scope .cxd-AsideNav {
+  padding: 14px 10px 24px;
+  background: transparent;
+}
+
+.amis-scope .cxd-AsideNav-list,
+.amis-scope .cxd-AsideNav-subList {
+  display: grid;
+  gap: 4px;
+}
+
+.amis-scope .cxd-AsideNav-item > a,
+.amis-scope .cxd-AsideNav-label {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 10px 12px;
+  color: var(--zv-sidebar-text);
+  border-radius: 10px;
+  transition: color 180ms ease, background 180ms ease, transform 180ms ease;
+}
+
+.amis-scope .cxd-AsideNav-item > a:hover,
+.amis-scope .cxd-AsideNav-itemLabel {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  flex: 1 1 auto;
+  line-height: 22px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.amis-scope .cxd-AsideNav-itemIcon,
+.amis-scope .cxd-AsideNav-itemArrow {
+  flex: 0 0 auto;
+}
+.amis-scope .cxd-AsideNav-item.is-active > a,
+.amis-scope .cxd-AsideNav-item.active > a,
+.amis-scope .cxd-AsideNav-item--active > a {
+  color: var(--zv-text-on-accent);
+  background: linear-gradient(135deg, rgb(var(--zv-primary-rgb) / 82%), rgb(var(--zv-cyan-rgb) / 62%));
+  box-shadow: 0 8px 22px rgb(var(--zv-primary-rgb) / 22%);
+  transform: translateX(2px);
+}
+
+.amis-scope .cxd-AsideNav-itemIcon {
+  color: var(--zv-primary-hover);
+}
+
+.amis-scope .cxd-AsideNav-itemArrow {
+  opacity: 0.65;
+  transition: transform 220ms var(--zv-ease);
+}
+
+.amis-scope .cxd-AppBcn {
+  display: none;
+}
+
+.amis-scope .cxd-AppBody,
+.amis-scope .cxd-AppContent,
+.amis-scope .cxd-Layout-main,
+.amis-scope .cxd-Layout-content {
+  min-width: 0;
+  color: var(--zv-text);
+  background: var(--zv-canvas);
+}
+
+.amis-scope .cxd-Layout-footer {
+  color: var(--zv-text-muted);
+  border-top: 1px solid var(--zv-border);
+  background: var(--zv-surface-muted);
+}
+
+.amis-scope .cxd-Layout-main > .cxd-Page,
+.amis-scope .cxd-AppContent > .cxd-Page {
+  width: 0;
+  flex: 1 1 auto;
+}
+
+/* Page hierarchy */
+.amis-scope .cxd-Page {
+  color: var(--zv-text);
+  background: transparent;
+  animation: zv-page-enter 420ms var(--zv-ease) both;
+}
+
+.amis-scope .cxd-Page-header {
+  padding: 22px 24px 14px;
+  border: 0;
+  background: transparent;
+}
+
+.amis-scope .cxd-Page-title {
+  color: var(--zv-text);
+  letter-spacing: -0.025em;
+  font-size: 22px;
+  font-weight: 720;
+}
+
+.amis-scope .cxd-Page-body,
+.amis-scope .cxd-Page-content {
+  min-width: 0;
+  padding: 14px 18px 24px;
+  color: var(--zv-text);
+  background: transparent;
+}
+
+.amis-scope .cxd-Page-toolbar {
+  gap: 8px;
+}
+
+/* Panels, cards and grouped content */
+.amis-scope .cxd-Panel,
+.amis-scope .cxd-Card {
+  overflow: hidden;
+  color: var(--zv-text);
+  border: 1px solid var(--zv-border);
+  border-radius: var(--zv-radius-lg);
+  background: var(--zv-surface);
+  box-shadow: var(--zv-shadow-sm);
+  transition: border-color 180ms ease, box-shadow 220ms ease, transform 220ms var(--zv-ease);
+}
+
+.amis-scope .cxd-Panel:hover,
+.amis-scope .cxd-Card:hover {
+  border-color: var(--zv-border-strong);
+  box-shadow: 0 14px 35px rgb(var(--zv-shadow-rgb) / 8%);
+}
+
+.amis-scope .cxd-Panel-heading,
+.amis-scope .cxd-Card-heading {
+  min-height: 48px;
+  padding: 14px 16px;
+  color: var(--zv-text);
+  border-bottom: 1px solid var(--zv-border);
+  background: linear-gradient(180deg, var(--zv-surface), var(--zv-surface-muted));
+}
+
+.amis-scope .cxd-Panel-title,
+.amis-scope .cxd-Card-title {
+  color: var(--zv-text);
+  letter-spacing: -0.01em;
+  font-weight: 650;
+}
+
+.amis-scope .cxd-Panel-body,
+.amis-scope .cxd-Card-body {
+  color: var(--zv-text);
+  background: var(--zv-surface);
+}
+
+.amis-scope .cxd-Panel-footer,
+.amis-scope .cxd-Card-footer {
+  border-top: 1px solid var(--zv-border);
+  background: var(--zv-surface-muted);
+}
+
+/* Buttons and actions */
+.amis-scope .cxd-Button {
+  min-height: 34px;
+  padding: 7px 14px;
+  color: var(--zv-text-secondary);
+  border: 1px solid var(--zv-border-strong);
+  border-radius: 10px;
+  background: var(--zv-surface);
+  box-shadow: 0 1px 2px rgb(var(--zv-shadow-rgb) / 4%);
+  font-weight: 560;
+  transition: color 160ms ease, border-color 160ms ease, background 160ms ease,
+    box-shadow 180ms ease, transform 160ms var(--zv-ease);
+}
+
+.amis-scope .cxd-Button:hover:not(:disabled) {
+  color: var(--zv-primary);
+  border-color: rgb(var(--zv-primary-rgb) / 38%);
+  background: var(--zv-primary-soft);
+  box-shadow: 0 6px 18px rgb(var(--zv-primary-rgb) / 12%);
+  transform: translateY(-1px);
+}
+
+.amis-scope .cxd-Button:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+.amis-scope .cxd-Button--primary {
+  color: var(--zv-text-on-accent);
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--zv-primary), var(--zv-cyan));
+  box-shadow: 0 7px 18px rgb(var(--zv-primary-rgb) / 22%);
+}
+
+.amis-scope .cxd-Button--primary:hover:not(:disabled) {
+  color: var(--zv-text-on-accent);
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--zv-primary-pressed), var(--zv-cyan-pressed));
+  box-shadow: 0 10px 24px rgb(var(--zv-primary-rgb) / 28%);
+}
+
+.amis-scope .cxd-Button--danger {
+  color: var(--zv-text-on-accent);
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--zv-danger), var(--zv-danger-pressed));
+  box-shadow: 0 7px 18px rgb(var(--zv-danger-rgb) / 18%);
+}
+
+.amis-scope .cxd-Button--success {
+  color: var(--zv-text-on-accent);
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--zv-success), var(--zv-success-pressed));
+}
+
+.amis-scope .cxd-Button--link {
+  min-height: 28px;
+  padding-inline: 7px;
+  color: var(--zv-primary);
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+.amis-scope .cxd-ButtonGroup {
+  gap: 5px;
+  padding: 3px;
+  border: 1px solid var(--zv-border);
+  border-radius: 12px;
+  background: var(--zv-surface-muted);
+}
+
+/* Forms and inputs */
+.amis-scope .cxd-Form-label {
+  color: var(--zv-text-secondary);
+  font-weight: 590;
+}
+
+.amis-scope .cxd-Form-description,
+.amis-scope .cxd-Form-hint,
+.amis-scope .cxd-Form-placeholder {
+  color: var(--zv-text-muted);
+}
+
+.amis-scope .cxd-Form-control,
+.amis-scope .cxd-InputBox,
+.amis-scope .cxd-Select,
+.amis-scope .cxd-TextControl-input,
+.amis-scope .cxd-TextareaControl-input,
+.amis-scope input,
+.amis-scope textarea {
+  color: var(--zv-text);
+  border-color: var(--zv-border-strong);
+  border-radius: 10px;
+  background: var(--zv-surface);
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.amis-scope .cxd-InputBox:hover,
+.amis-scope .cxd-Select:hover,
+.amis-scope input:hover,
+.amis-scope textarea:hover {
+  border-color: var(--zv-border-strong);
+}
+
+.amis-scope .cxd-InputBox.is-focused,
+.amis-scope .cxd-Select.is-focused,
+.amis-scope input:focus,
+.amis-scope textarea:focus {
+  outline: 0;
+  border-color: var(--zv-primary);
+  box-shadow: 0 0 0 3px rgb(var(--zv-primary-rgb) / 14%);
+}
+
+.amis-scope .cxd-Select-menu,
+.amis-scope .cxd-Select-popover,
+.amis-scope .cxd-PopOver-content,
+.amis-scope .cxd-DatePicker-popover {
+  overflow: hidden;
+  color: var(--zv-text);
+  border: 1px solid var(--zv-border);
+  border-radius: 12px;
+  background: var(--zv-surface-raised);
+  box-shadow: var(--zv-shadow);
+}
+
+.amis-scope .cxd-Select-option {
+  margin: 3px 5px;
+  border-radius: 8px;
+  transition: background 140ms ease, color 140ms ease;
+}
+
+.amis-scope .cxd-Select-option:hover,
+.amis-scope .cxd-Select-option.is-active {
+  color: var(--zv-primary);
+  background: var(--zv-primary-soft);
+}
+
+/* Data tables */
+.amis-scope .cxd-Table-container,
+.amis-scope .cxd-Table-contentWrap {
+  overflow: hidden;
+  border: 1px solid var(--zv-border);
+  border-radius: 14px;
+  background: var(--zv-surface);
+}
+
+.amis-scope .cxd-Table {
+  color: var(--zv-text-secondary);
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--zv-surface);
+}
+
+.amis-scope .cxd-Table thead > tr > th,
+.amis-scope .cxd-Table-header {
+  height: 46px;
+  color: var(--zv-text-secondary);
+  border-color: var(--zv-border);
+  background: var(--zv-surface-muted);
+  font-size: 12px;
+  font-weight: 680;
+  letter-spacing: 0.02em;
+}
+
+.amis-scope .cxd-Table-wrapper,
+.amis-scope .cxd-Table-content,
+.amis-scope .cxd-Table-contentWrap {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.amis-scope .cxd-Table tbody > tr > td {
+  height: 48px;
+  color: var(--zv-text-secondary);
+  border-color: var(--zv-border);
+  background: var(--zv-surface);
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.amis-scope .cxd-Table tbody > tr:hover > td {
+  color: var(--zv-text);
+  background: var(--zv-primary-soft);
+}
+
+.amis-scope .cxd-Table tbody > tr.is-checked > td,
+.amis-scope .cxd-Table tbody > tr.is-selected > td {
+  background: rgb(var(--zv-primary-rgb) / 9%);
+}
+
+.amis-scope .cxd-Table-emptyBlock,
+.amis-scope .cxd-Table-placeholder {
+  min-height: 160px;
+  color: var(--zv-text-muted);
+  background: var(--zv-surface);
+}
+
+.amis-scope .cxd-Table-itemActions {
+  gap: 4px;
+}
+
+/* Tabs, pagination, status and feedback */
+.amis-scope .cxd-Tabs {
+  color: var(--zv-text);
+  border-color: var(--zv-border);
+}
+
+.amis-scope .cxd-Tabs-links {
+  gap: 5px;
+  padding: 4px;
+  border: 1px solid var(--zv-border);
+  border-radius: 12px;
+  background: var(--zv-surface-muted);
+}
+
+.amis-scope .cxd-Tabs-link {
+  border-radius: 9px;
+  transition: color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.amis-scope .cxd-Tabs-link.is-active,
+.amis-scope .cxd-Tabs-link--active {
+  color: var(--zv-primary);
+  background: var(--zv-surface);
+  box-shadow: var(--zv-shadow-sm);
+}
+
+.amis-scope .cxd-Pagination-item,
+.amis-scope .cxd-Pagination-prev,
+.amis-scope .cxd-Pagination-next {
+  overflow: hidden;
+  min-width: 32px;
+  height: 32px;
+  margin: 0 2px;
+  color: var(--zv-text-secondary);
+  border-color: var(--zv-border);
+  border-radius: 9px;
+  background: var(--zv-surface);
+}
+
+.amis-scope .cxd-Pagination-item.is-active,
+.amis-scope .cxd-Pagination-item--active {
+  color: var(--zv-text-on-accent);
+  border-color: var(--zv-primary);
+  background: var(--zv-primary);
+}
+
+.amis-scope .cxd-Tag,
+.amis-scope .label,
+.amis-scope .badge {
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.amis-scope .cxd-Alert {
+  border-radius: 12px;
+  box-shadow: var(--zv-shadow-sm);
+}
+
+.amis-scope .cxd-Toast-wrap,
+.amis-scope .cxd-Toast {
+  color: var(--zv-text);
+  border: 1px solid var(--zv-border);
+  border-radius: 12px;
+  background: var(--zv-surface-raised);
+  box-shadow: var(--zv-shadow);
+  backdrop-filter: blur(16px);
+}
+
+/* Dialogs and drawers */
+.amis-scope .cxd-Modal-overlay,
+.amis-scope .cxd-Drawer-overlay {
+  background: rgb(var(--zv-overlay-rgb) / 48%);
+  backdrop-filter: blur(6px);
+  animation: zv-fade-in 180ms ease both;
+}
+
+.amis-scope .cxd-Modal-content,
+.amis-scope .cxd-Drawer-content {
+  overflow: hidden;
+  color: var(--zv-text);
+  border: 1px solid var(--zv-border);
+  border-radius: 18px;
+  background: var(--zv-surface-raised);
+  box-shadow: var(--zv-shadow-lg);
+  animation: zv-dialog-enter 260ms var(--zv-ease) both;
+}
+
+.amis-scope .cxd-Drawer-content {
+  border-radius: 18px 0 0 18px;
+}
+
+.amis-scope .cxd-Modal-header,
+.amis-scope .cxd-Drawer-header {
+  min-height: 60px;
+  color: var(--zv-text);
+  border-bottom: 1px solid var(--zv-border);
+  background: var(--zv-surface-raised);
+}
+
+.amis-scope .cxd-Modal-title,
+.amis-scope .cxd-Drawer-title {
+  letter-spacing: -0.015em;
+  font-size: 17px;
+  font-weight: 680;
+}
+
+.amis-scope .cxd-Modal-body,
+.amis-scope .cxd-Drawer-body,
+.amis-scope .cxd-Modal-footer,
+.amis-scope .cxd-Drawer-footer {
+  color: var(--zv-text);
+  border-color: var(--zv-border);
+  background: var(--zv-surface-raised);
+}
+
+/* Theme-complete AMIS surfaces. AMIS ships a number of opaque light
+ * backgrounds, so every structural layer must opt into the ZenVis tokens. */
+.amis-scope .cxd-Crud,
+.amis-scope .cxd-Crud-body,
+.amis-scope .cxd-Service,
+.amis-scope .cxd-Service-body,
+.amis-scope .cxd-Form,
+.amis-scope .cxd-Chart {
+  color: var(--zv-text);
+  border-color: var(--zv-border);
+  background: transparent;
+}
+
+.amis-scope hr {
+  border-color: var(--zv-border);
+}
+
+.amis-scope input::placeholder,
+.amis-scope textarea::placeholder {
+  color: var(--zv-text-muted);
+  opacity: 1;
+}
+
+@keyframes zv-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes zv-dialog-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes zv-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes zv-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.62;
+    transform: scale(0.84);
+  }
+}
+
+@keyframes zv-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --zv-aside-width: 188px;
+  }
+
+  .amis-scope .cxd-Page-header {
+    padding-inline: 16px;
+  }
+
+  .amis-scope .cxd-Page-body,
+  .amis-scope .cxd-Page-content {
+    padding-inline: 12px;
+  }
+
+  .amis-scope .zv-hero {
+    padding: 20px;
+  }
+
+  .amis-scope .zv-crud-workspace .cxd-Crud-filter {
+    grid-template-columns: 1fr;
+  }
+
+  .amis-scope .zv-crud-workspace .cxd-Crud-filter {
+    grid-template-columns: 1fr;
+  }
+
+  .amis-scope .zv-crud-workspace .cxd-Crud-filter .cxd-Panel-footer {
+    justify-content: flex-end;
+    width: 100%;
+    border-top: 1px solid var(--zv-border);
+    border-left: 0;
+  }
+
+  .amis-scope .zv-crud-workspace .cxd-Crud-filter .cxd-Panel-footer {
+    justify-content: flex-end;
+    width: 100%;
+    border-top: 1px solid var(--zv-border);
+    border-left: 0;
+  }
+
+  .amis-scope .zv-summary-copy {
+    overflow: visible;
+    text-overflow: initial;
+    white-space: normal;
+  }
+}
+
+@media (max-width: 640px) {
+  .amis-scope .cxd-Panel,
+  .amis-scope .cxd-Card,
+  .amis-scope .cxd-Modal-content {
+    border-radius: 12px;
+  }
+
+  .amis-scope .cxd-Table-container {
+    overflow-x: auto;
+  }
+
+  .amis-scope .zv-hero h2 {
+    font-size: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

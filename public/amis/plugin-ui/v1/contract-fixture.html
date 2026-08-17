@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ZenVis UI Contract v1 Fixture</title>
+    <link rel="stylesheet" href="./zenvis-plugin-tokens.css" />
+    <link rel="stylesheet" href="./zenvis-plugin-ui.css" />
+    <script src="./zenvis-plugin-ui.js"></script>
+  </head>
+  <body>
+    <main class="zv-page zv-workspace">
+      <section class="zv-hero">
+        <span class="zv-hero__status">Contract ready</span>
+        <h1>ZenVis UI Contract v1</h1>
+        <div class="zv-hero__chips"><span>standard</span><span>amis@6.7</span></div>
+      </section>
+      <section class="zv-summary-bar">
+        <strong class="zv-summary-metric">1.0.0</strong>
+        <span id="context" class="zv-summary-copy">Waiting for host context</span>
+      </section>
+      <section class="zv-metric-card">Inherited metric surface</section>
+      <section class="zv-visual-page zv-chart-card">Inherited chart surface</section>
+      <section class="zv-crud-workspace zv-table-shell">
+        <div class="zv-truncate">Long single-line content validates truncation behavior</div>
+        <div class="zv-wrap">Long content validates wrapping behavior</div>
+      </section>
+    </main>
+    <script>
+      document.addEventListener('zenvis:ui-sync', function (event) {
+        document.getElementById('context').textContent = JSON.stringify(event.detail);
+      });
+    </script>
+  </body>
+</html>
