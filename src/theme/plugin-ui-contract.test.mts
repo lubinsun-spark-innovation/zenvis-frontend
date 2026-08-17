@@ -149,6 +149,20 @@ test('AMIS entry points load the complete versioned adapter before rendering', (
   assert.equal(existsSync(resolve(repositoryRoot, 'public/amis/zenvis-modern.css')), false);
 });
 
+test('AMIS side navigation keeps expanded parents visible and nested ownership explicit', () => {
+  const adapter = read('public/amis/plugin-ui/v1/zenvis-amis-adapter.css');
+
+  assert.match(adapter, /\.cxd-AsideNav-list\s*>\s*\.cxd-AsideNav-item\.is-open\s*>\s*a/);
+  assert.match(adapter, /\.cxd-AsideNav-item\.is-open\s*>\s*\.cxd-AsideNav-subList/);
+  assert.match(adapter, /\.cxd-AsideNav-subList\s+\.cxd-AsideNav-item\s*>\s*a/);
+  assert.match(adapter, /border-left:\s*1px solid rgb\(var\(--zv-on-accent-rgb\)/);
+  assert.match(adapter, /\.cxd-AsideNav-itemArrow\s*\{[\s\S]*?order:\s*4/);
+  assert.match(adapter, /\.cxd-AsideNav-subList\s*\{[\s\S]*?visibility:\s*hidden/);
+  assert.match(adapter, /\.cxd-Layout-asideInner\s*\{[\s\S]*?overflow-y:\s*auto/);
+  assert.match(adapter, /\.cxd-AsideNav-item\s*>\s*a:focus-visible/);
+  assert.match(adapter, /@keyframes zv-nav-reveal/);
+});
+
 test('runtime and browser fixture implement the versioned host handshake', () => {
   const runtime = read('public/amis/plugin-ui/v1/zenvis-plugin-ui.js');
   const fixture = read('public/amis/plugin-ui/v1/contract-fixture.html');
