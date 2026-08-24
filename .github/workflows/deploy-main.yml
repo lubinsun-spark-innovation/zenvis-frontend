@@ -1,0 +1,95 @@
+name: Deploy main
+
+'on':
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'index.html'
+      - 'package.json'
+      - 'yarn.lock'
+      - 'tsconfig*.json'
+      - 'vite.config.*'
+      - 'prettier.config.js'
+      - 'Dockerfile'
+      - 'build.sh'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  validate-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    environment: production
+    env:
+      COMPONENT: zenvis-frontend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: yarn
+
+      - name: Test and build frontend
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          corepack enable
+          yarn install --frozen-lockfile
+          yarn test
+          yarn build:pro-tsc
+          test -s dist/index.html
+          bash -n build.sh
+          git diff --check
+
+      - name: Deploy validated revision
+        shell: bash
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          DEPLOY_SSH_KNOWN_HOSTS: ${{ secrets.DEPLOY_SSH_KNOWN_HOSTS }}
+        run: |
+          set -Eeuo pipefail
+          : "${DEPLOY_HOST:?DEPLOY_HOST is required}"
+          : "${DEPLOY_PORT:?DEPLOY_PORT is required}"
+          : "${DEPLOY_USER:?DEPLOY_USER is required}"
+          : "${DEPLOY_SSH_PRIVATE_KEY:?DEPLOY_SSH_PRIVATE_KEY is required}"
+          : "${DEPLOY_SSH_KNOWN_HOSTS:?DEPLOY_SSH_KNOWN_HOSTS is required}"
+          [[ "$DEPLOY_HOST" =~ ^[A-Za-z0-9._:-]+$ ]]
+          [[ "$DEPLOY_PORT" =~ ^[0-9]+$ ]] && (( DEPLOY_PORT >= 1 && DEPLOY_PORT <= 65535 ))
+          [[ "$DEPLOY_USER" =~ ^[a-z_][a-z0-9_-]{0,31}$ ]]
+          [[ "$GITHUB_REPOSITORY" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]]
+          [[ "$GITHUB_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$COMPONENT" == 'zenvis-frontend' ]]
+
+          ssh_dir="$RUNNER_TEMP/lubinsun-deploy-ssh"
+          install -m 700 -d "$ssh_dir"
+          trap 'rm -f "$ssh_dir/id_ed25519" "$ssh_dir/known_hosts"' EXIT
+          printf '%s\n' "$DEPLOY_SSH_PRIVATE_KEY" >"$ssh_dir/id_ed25519"
+          printf '%s\n' "$DEPLOY_SSH_KNOWN_HOSTS" >"$ssh_dir/known_hosts"
+          chmod 600 "$ssh_dir/id_ed25519" "$ssh_dir/known_hosts"
+          ssh-keygen -y -f "$ssh_dir/id_ed25519" >/dev/null
+          known_host="$DEPLOY_HOST"
+          [[ "$DEPLOY_PORT" == 22 ]] || known_host="[$DEPLOY_HOST]:$DEPLOY_PORT"
+          ssh-keygen -F "$known_host" -f "$ssh_dir/known_hosts" >/dev/null
+
+          remote_command="/home/lubinsun/.local/bin/lubinsun-deploy deploy $COMPONENT $GITHUB_REPOSITORY $GITHUB_SHA"
+          ssh -i "$ssh_dir/id_ed25519" -p "$DEPLOY_PORT" \
+            -o BatchMode=yes \
+            -o ConnectTimeout=15 \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            -o UserKnownHostsFile="$ssh_dir/known_hosts" \
+            -- "$DEPLOY_USER@$DEPLOY_HOST" "$remote_command"
