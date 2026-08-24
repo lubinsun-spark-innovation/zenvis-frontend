@@ -14,6 +14,7 @@ name: Deploy main
       - 'prettier.config.js'
       - 'Dockerfile'
       - 'build.sh'
+      - '.github/workflows/deploy-main.yml'
   workflow_dispatch:
 
 permissions:
@@ -44,6 +45,7 @@ jobs:
         shell: bash
         run: |
           set -Eeuo pipefail
+          unset NODE_TLS_REJECT_UNAUTHORIZED
           corepack enable
           yarn install --frozen-lockfile
           yarn test
